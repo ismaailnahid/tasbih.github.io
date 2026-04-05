@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>তাসবিহ প্রো | এলিট জিকির কাউন্টার</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Ultra responsive fluid system */
+    :root {
+      --radius-sm: clamp(12px, 4vw, 20px);
+      --radius-md: clamp(20px, 6vw, 40px);
+      --radius-lg: clamp(30px, 8vw, 56px);
+      --radius-xl: clamp(40px, 10vw, 80px);
+      --spacing-xs: clamp(6px, 2vw, 10px);
+      --spacing-sm: clamp(10px, 3vw, 16px);
+      --spacing-md: clamp(16px, 4vw, 24px);
+      --spacing-lg: clamp(24px, 5vw, 32px);
+      --font-xs: clamp(11px, 3vw, 13px);
+      --font-sm: clamp(13px, 3.5vw, 15px);
+      --font-md: clamp(16px, 4vw, 20px);
+      --font-lg: clamp(20px, 5vw, 28px);
+      --font-xl: clamp(28px, 7vw, 42px);
+      --font-xxl: clamp(38px, 10vw, 70px);
+    }
+
+    body {
+      background: radial-gradient(ellipse at 20% 30%, #0a1f0e, #030a04);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', 'Segoe UI', 'Poppins', 'Noto Serif Bengali', system-ui, -apple-system, sans-serif;
+      padding: var(--spacing-md);
+      position: relative;
+    }
+
+    /* Main container - fully fluid */
+    .tasbih-pro {
+      max-width: 1000px;
+      width: 100%;
+      margin: 0 auto;
+      background: rgba(20, 18, 12, 0.55);
+      backdrop-filter: blur(16px);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 220, 150, 0.2), inset 0 1px 2px rgba(255, 245, 200, 0.1);
+      padding: var(--spacing-lg);
+      transition: all 0.3s ease;
+    }
+
+    /* Header badge */
+    .pro-badge {
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+    }
+    .badge {
+      background: linear-gradient(135deg, #2a281c, #1f1d12);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 20px;
+      border-radius: 100px;
+      font-size: var(--font-xs);
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: #f5d78c;
+      text-transform: uppercase;
+      border: 1px solid rgba(230, 195, 100, 0.4);
+      box-shadow: inset 0 1px 0 rgba(255, 245, 180, 0.1), 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Notes section */
+    .notes-card {
+      background: rgba(30, 28, 22, 0.65);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-lg);
+      border: 1px solid rgba(220, 185, 90, 0.4);
+    }
+
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+      margin-bottom: var(--spacing-md);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 2px solid rgba(220, 185, 80, 0.3);
+    }
+
+    .notes-title {
+      font-size: var(--font-md);
+      font-weight: 700;
+      background: linear-gradient(135deg, #f9e5b3, #e2bc6c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-add {
+      background: linear-gradient(145deg, #3f8a41, #235f25);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-weight: 600;
+      color: white;
+      font-size: var(--font-xs);
+      cursor: pointer;
+      box-shadow: 0 6px 0 #103a12;
+      transition: 0.07s linear;
+    }
+    .btn-add:active { transform: translateY(3px); box-shadow: 0 2px 0 #103a12; }
+
+    /* Notes list - smooth scroll */
+    .notes-list {
+      max-height: 360px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 4px;
+    }
+    .notes-list::-webkit-scrollbar { width: 4px; }
+    .notes-list::-webkit-scrollbar-track { background: #2a281e; border-radius: 10px; }
+    .notes-list::-webkit-scrollbar-thumb { background: #c9aa6b; border-radius: 10px; }
+
+    /* Note item - fully responsive grid */
+    .note-item {
+      background: linear-gradient(115deg, #fffaf0, #fff6e8);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s;
+    }
+    .note-item.completed {
+      background: linear-gradient(115deg, #c8e6b0, #aad48a);
+      border-left: 5px solid #2e8b2e;
+    }
+
+    .serial {
+      background: radial-gradient(circle at 30% 25%, #c7a45c, #a07d42);
+      width: clamp(40px, 8vw, 52px);
+      height: clamp(40px, 8vw, 52px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 60px;
+      font-size: clamp(1rem, 4vw, 1.4rem);
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 5px 0 #614d28;
+      flex-shrink: 0;
+    }
+
+    .note-content-area {
+      flex: 2;
+      min-width: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .note-text {
+      background: rgba(255, 250, 235, 0.95);
+      border: 1px solid #e7cf99;
+      padding: 8px 14px;
+      border-radius: 60px;
+      font-size: var(--font-sm);
+      outline: none;
+      font-weight: 500;
+      width: 100%;
+    }
+
+    .limit-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      background: #f1e7d3;
+      padding: 5px 12px;
+      border-radius: 60px;
+    }
+    .limit-label {
+      font-size: var(--font-xs);
+      font-weight: 600;
+      color: #866e3c;
+    }
+    .limit-input {
+      width: 65px;
+      background: white;
+      border: none;
+      border-radius: 40px;
+      padding: 5px 8px;
+      font-weight: bold;
+      text-align: center;
+      font-size: var(--font-xs);
+    }
+    .progress-badge {
+      background: #2f3a1f;
+      color: #ffecb3;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: var(--font-xs);
+      font-weight: 500;
+    }
+
+    .btn-select {
+      background: #8f6b3c;
+      border: none;
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #543f1f;
+      font-size: var(--font-xs);
+      transition: 0.05s linear;
+    }
+    .btn-select.active {
+      background: #2a7a2c;
+      box-shadow: 0 0 10px #7ef55e;
+    }
+    .btn-select:active { transform: translateY(2px); box-shadow: 0 1px 0 #543f1f; }
+
+    .note-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .action-icon {
+      background: #e2d2b0;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #b39562;
+      transition: 0.05s linear;
+    }
+    .action-icon:active { transform: translateY(2px); box-shadow: 0 1px 0 #b39562; }
+
+    /* Selected note card */
+    .selected-card {
+      background: linear-gradient(135deg, #262215, #1c1a0f);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-md);
+      margin: var(--spacing-md) 0;
+      border: 1px solid rgba(243, 207, 132, 0.5);
+    }
+
+    .selected-header {
+      text-align: center;
+      margin-bottom: var(--spacing-sm);
+    }
+    .selected-label {
+      font-size: var(--font-xs);
+      letter-spacing: 2px;
+      color: #dbb86b;
+      font-weight: 600;
+    }
+    .selected-name {
+      font-size: var(--font-md);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff2cf, #f7dc9c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      word-break: break-word;
+      padding: 8px 0;
+    }
+
+    .stats-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(12px, 5vw, 25px);
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .stat-chip {
+      background: #2d2a1c;
+      border-radius: 100px;
+      padding: 6px 18px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .stat-chip span:first-child {
+      font-size: var(--font-xs);
+      color: #e2bc7c;
+    }
+    .stat-chip span:last-child {
+      font-size: var(--font-md);
+      font-weight: 800;
+      color: #ffeaac;
+    }
+
+    /* Counter with plus/minus - fully responsive */
+    .counter-area {
+      text-align: center;
+      margin: var(--spacing-sm) 0;
+    }
+    .counter-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(15px, 6vw, 35px);
+      flex-wrap: wrap;
+    }
+    .counter-btn {
+      background: radial-gradient(circle at 30% 30%, #5a4a2a, #3a2e18);
+      border: none;
+      width: clamp(60px, 13vw, 85px);
+      height: clamp(60px, 13vw, 85px);
+      border-radius: 80px;
+      font-size: clamp(2rem, 8vw, 3.8rem);
+      font-weight: 900;
+      color: #ffefbf;
+      cursor: pointer;
+      box-shadow: 0 10px 0 #2a2210;
+      transition: 0.05s linear;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .counter-btn:active {
+      transform: translateY(5px);
+      box-shadow: 0 4px 0 #2a2210;
+    }
+    .counter-number {
+      font-size: var(--font-xxl);
+      font-weight: 900;
+      background: linear-gradient(145deg, #1e1b10, #0f0d07);
+      display: inline-block;
+      padding: 8px clamp(20px, 6vw, 50px);
+      border-radius: 100px;
+      box-shadow: inset 0 -2px 0 #5e552e, 0 20px 35px rgba(0, 0, 0, 0.4);
+      color: #fff0c4;
+      font-family: monospace;
+      letter-spacing: clamp(4px, 2vw, 10px);
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .counter-hint {
+      margin-top: 12px;
+    }
+    .hint-chip {
+      background: #2c281b;
+      border-radius: 60px;
+      padding: 5px 16px;
+      font-size: var(--font-xs);
+      color: #f0d89e;
+      display: inline-block;
+    }
+
+    /* Global panel */
+    .global-panel {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: var(--spacing-md) 0;
+    }
+    .global-text {
+      color: #e9cf8b;
+      font-size: var(--font-sm);
+      font-weight: 500;
+    }
+    .global-input {
+      background: #262419;
+      border: 1px solid #c9aa66;
+      padding: 8px 14px;
+      border-radius: 50px;
+      color: #ffe6b3;
+      width: 90px;
+      text-align: center;
+      font-size: var(--font-sm);
+    }
+    .global-btn {
+      background: #b87c38;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #5a3a18;
+      font-size: var(--font-xs);
+    }
+    .global-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #5a3a18; }
+
+    /* Main tap button */
+    .main-tap {
+      background: radial-gradient(circle at 30% 20%, #4ba84f, #1a621e);
+      border: none;
+      width: 100%;
+      padding: 18px 16px;
+      border-radius: 100px;
+      font-size: clamp(1.2rem, 5vw, 1.8rem);
+      font-weight: 700;
+      color: #fff4dc;
+      cursor: pointer;
+      margin: var(--spacing-md) 0;
+      box-shadow: 0 12px 0 #0a380c;
+      transition: 0.07s linear;
+      letter-spacing: 2px;
+    }
+    .main-tap:active { transform: translateY(5px); box-shadow: 0 5px 0 #0a380c; }
+
+    /* Button group */
+    .action-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .reset-btn {
+      background: #8f6534;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 60px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #563d1a;
+      font-size: var(--font-xs);
+      transition: 0.05s linear;
+    }
+    .reset-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #563d1a; }
+
+    .footer {
+      text-align: center;
+      margin-top: var(--spacing-lg);
+      font-size: var(--font-xs);
+      color: #b8a064;
+      border-top: 1px solid rgba(200, 170, 90, 0.3);
+      padding-top: var(--spacing-md);
+    }
+
+    /* Small device optimizations */
+    @media (max-width: 550px) {
+      .tasbih-pro { padding: var(--spacing-md); }
+      .note-item { flex-direction: column; align-items: stretch; }
+      .note-actions { justify-content: flex-end; }
+      .serial { align-self: center; }
+      .counter-flex { gap: 12px; }
+      .counter-btn { width: 55px; height: 55px; font-size: 2rem; }
+      .counter-number { letter-spacing: 4px; min-width: 110px; }
+      .stat-chip { padding: 4px 12px; }
+    }
+
+    @media (max-width: 380px) {
+      .counter-btn { width: 48px; height: 48px; font-size: 1.6rem; }
+      .counter-number { font-size: 2rem; padding: 5px 12px; }
+    }
+  </style>
+</head>
+<body>
+<div class="tasbih-pro">
+  <div class="pro-badge"><span class="badge">✦ তাসবিহ প্রো ✦</span></div>
+
+  <!-- Notes Section -->
+  <div class="notes-card">
+    <div class="notes-header">
+      <div class="notes-title"><span>📿</span> আমার জিকির নোটস</div>
+      <button id="addNoteBtn" class="btn-add">+ নতুন নোট</button>
+    </div>
+    <div id="notesList" class="notes-list"></div>
+  </div>
+
+  <!-- Selected Note Card -->
+  <div class="selected-card">
+    <div class="selected-header">
+      <div class="selected-label">📖 সিলেক্টেড জিকির</div>
+      <div class="selected-name" id="selectedName">কোনো নোট সিলেক্ট নেই</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-chip"><span>🎯 লক্ষ্য</span><span id="selectedLimit">—</span></div>
+      <div class="stat-chip"><span>📊 অগ্রগতি</span><span id="selectedProgress">0</span></div>
+      <div class="stat-chip"><span>✨ অবস্থা</span><span id="selectedStatus">—</span></div>
+    </div>
+  </div>
+
+  <!-- Counter with Plus/Minus -->
+  <div class="counter-area">
+    <div class="counter-flex">
+      <button id="decrementBtn" class="counter-btn">−</button>
+      <span id="counterDisplay" class="counter-number">0</span>
+      <button id="incrementBtn" class="counter-btn">+</button>
+    </div>
+    <div class="counter-hint"><span class="hint-chip" id="counterHint">🔘 +/− বাটন ব্যবহার করুন</span></div>
+  </div>
+
+  <!-- Global Limit Panel -->
+  <div class="global-panel">
+    <span class="global-text">🌍 গ্লোবাল সীমা (সতর্কতা)</span>
+    <input type="number" id="globalLimitInput" class="global-input" value="99" min="1" max="9999">
+    <button id="setGlobalBtn" class="global-btn">সেট করুন</button>
+  </div>
+
+  <button id="tapButton" class="main-tap">🕋 ট্যাপ / গণনা 🕌</button>
+
+  <div class="action-group">
+    <button id="resetSelectedBtn" class="reset-btn">⟳ রিসেট সিলেক্টেড</button>
+    <button id="resetAllBtn" class="reset-btn" style="background:#6f4e2e;">🔄 রিসেট সব প্রগ্রেস</button>
+  </div>
+  <div class="footer">✨ প্রতিটি নোটের নিজস্ব লিমিট | +/− বাটন দিয়ে ভুল সংশোধন | সম্পূর্ণ রেস্পন্সিভ ডিজাইন</div>
+</div>
+
+<script>
+  // ---------- App State ----------
+  let notes = [];
+  let nextId = 1;
+  let selectedId = null;
+  let globalLimit = 99;
+
+  // Storage keys
+  const STORAGE_NOTES = 'tasbih_pro_notes';
+  const STORAGE_SELECTED = 'tasbih_pro_selected';
+  const STORAGE_GLOBAL = 'tasbih_pro_global';
+
+  // Helper: Play sound
+  function playBeep() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = 880;
+      gain.gain.value = 0.2;
+      osc.type = "sine";
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.7);
+      osc.stop(audioCtx.currentTime + 0.6);
+    } catch(e) {}
+  }
+
+  // 3D Alert
+  function showAlert(msg, isComplete = false) {
+    const div = document.createElement('div');
+    div.textContent = msg;
+    div.style.position = 'fixed';
+    div.style.top = '50%';
+    div.style.left = '50%';
+    div.style.transform = 'translate(-50%, -50%) scale(0.9)';
+    div.style.backgroundColor = '#1e1b12';
+    div.style.color = '#ffefbf';
+    div.style.padding = 'clamp(16px, 5vw, 24px) clamp(24px, 8vw, 48px)';
+    div.style.borderRadius = '70px';
+    div.style.fontSize = 'clamp(1rem, 5vw, 1.5rem)';
+    div.style.fontWeight = 'bold';
+    div.style.textAlign = 'center';
+    div.style.boxShadow = '0 30px 50px rgba(0,0,0,0.6), 0 0 0 3px #f3cf7a';
+    div.style.backdropFilter = 'blur(20px)';
+    div.style.zIndex = '10000';
+    div.style.border = '1px solid #efcd85';
+    div.style.fontFamily = 'inherit';
+    document.body.appendChild(div);
+    setTimeout(() => { div.style.transform = 'translate(-50%, -50%) scale(1)'; }, 10);
+    playBeep();
+    setTimeout(() => {
+      div.style.opacity = '0';
+      setTimeout(() => div.remove(), 400);
+    }, 2200);
+  }
+
+  // Update note completion status
+  function updateCompletion(note) {
+    if (note.current >= note.limit) {
+      if (!note.completed) {
+        note.completed = true;
+        showAlert(`✨ "${note.text.substring(0, 35)}" সম্পন্ন হয়েছে! ✨`, true);
+      }
+    } else {
+      note.completed = false;
+    }
+    saveData();
+  }
+
+  // Change counter (+ or -)
+  function changeCounter(delta) {
+    if (!selectedId) {
+      showAlert("⚠️ প্রথমে একটি নোট সিলেক্ট করুন");
+      return false;
+    }
+    const note = notes.find(n => n.id === selectedId);
+    if (!note) { selectedId = null; refreshUI(); return false; }
+    if (note.completed && delta > 0) {
+      showAlert(`📿 "${note.text.substring(0,30)}" সম্পূর্ণ! রিসেট করুন।`);
+      return false;
+    }
+    let newVal = note.current + delta;
+    if (newVal < 0) newVal = 0;
+    if (newVal > note.limit) {
+      if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`);
+      return false;
+    }
+    note.current = newVal;
+    if (note.current >= note.limit) updateCompletion(note);
+    else if (note.completed && note.current < note.limit) note.completed = false;
+    saveData();
+    renderNotesList();
+    updateCounterAndCard();
+    return true;
+  }
+
+  function increment() { changeCounter(1); }
+  function decrement() { changeCounter(-1); }
+
+  // Reset selected note
+  function resetSelected() {
+    if (!selectedId) { showAlert("কোন নোট সিলেক্ট নেই!"); return; }
+    const note = notes.find(n => n.id === selectedId);
+    if (note) {
+      note.current = 0;
+      note.completed = false;
+      saveData();
+      renderNotesList();
+      updateCounterAndCard();
+      showAlert(`🔄 "${note.text.substring(0,30)}" রিসেট করা হয়েছে`);
+    }
+  }
+
+  function resetAll() {
+    notes.forEach(n => { n.current = 0; n.completed = false; });
+    saveData();
+    renderNotesList();
+    updateCounterAndCard();
+    showAlert("🔄 সব নোটের অগ্রগতি রিসেট সম্পন্ন!");
+  }
+
+  function selectNote(id) {
+    if (notes.some(n => n.id === id)) {
+      selectedId = id;
+      localStorage.setItem(STORAGE_SELECTED, selectedId);
+      renderNotesList();
+      updateCounterAndCard();
+    }
+  }
+
+  // UI Update
+  function updateCounterAndCard() {
+    const counterSpan = document.getElementById('counterDisplay');
+    const nameSpan = document.getElementById('selectedName');
+    const limitSpan = document.getElementById('selectedLimit');
+    const progressSpan = document.getElementById('selectedProgress');
+    const statusSpan = document.getElementById('selectedStatus');
+    const hintSpan = document.getElementById('counterHint');
+
+    if (selectedId) {
+      const note = notes.find(n => n.id === selectedId);
+      if (note) {
+        counterSpan.innerText = note.current;
+        nameSpan.innerHTML = `📿 ${escapeHtml(note.text)}`;
+        limitSpan.innerText = note.limit;
+        progressSpan.innerText = `${note.current} / ${note.limit}`;
+        if (note.completed) {
+          statusSpan.innerHTML = '✅ সম্পন্ন';
+          hintSpan.innerHTML = '🎉 সম্পন্ন! রিসেট করুন';
+        } else {
+          statusSpan.innerHTML = '🟢 চলমান';
+          hintSpan.innerHTML = `➕➖ বাটন (${note.current}/${note.limit})`;
+        }
+        return;
+      }
+    }
+    counterSpan.innerText = "0";
+    nameSpan.innerHTML = '⚜️ কোন নোট সিলেক্ট নেই';
+    limitSpan.innerText = '—';
+    progressSpan.innerText = '0';
+    statusSpan.innerHTML = '⚠️ সিলেক্ট করুন';
+    hintSpan.innerHTML = '🔘 একটি নোট সিলেক্ট করুন';
+  }
+
+  function renderNotesList() {
+    const container = document.getElementById('notesList');
+    if (!container) return;
+    container.innerHTML = '';
+    if (notes.length === 0) {
+      container.innerHTML = '<div class="note-item" style="justify-content:center;">➕ নোট যোগ করুন</div>';
+      return;
+    }
+    notes.forEach((note, idx) => {
+      const div = document.createElement('div');
+      div.className = `note-item ${note.completed ? 'completed' : ''}`;
+      div.innerHTML = `
+        <div class="serial">${idx + 1}</div>
+        <div class="note-content-area">
+          <div class="note-text" contenteditable="true">${escapeHtml(note.text)}</div>
+          <div class="limit-row">
+            <span class="limit-label">🎯 লিমিট:</span>
+            <input type="number" class="limit-input" value="${note.limit}" min="1" max="9999" step="1">
+            <span class="progress-badge">📊 ${note.current}/${note.limit}</span>
+          </div>
+          <button class="btn-select ${selectedId === note.id ? 'active' : ''}">${selectedId === note.id ? '✓ সিলেক্টেড' : '🎯 সিলেক্ট'}</button>
+        </div>
+        <div class="note-actions">
+          <button class="action-icon up">⬆️</button>
+          <button class="action-icon down">⬇️</button>
+          <button class="action-icon del">🗑️</button>
+        </div>
+      `;
+      // Text edit
+      const textDiv = div.querySelector('.note-text');
+      textDiv.addEventListener('blur', (e) => {
+        let newVal = e.target.innerText.trim();
+        if (newVal !== note.text) {
+          note.text = newVal || "জিকির";
+          saveData();
+          renderNotesList();
+          updateCounterAndCard();
+        }
+      });
+      // Limit change
+      const limitInput = div.querySelector('.limit-input');
+      limitInput.addEventListener('change', (e) => {
+        let newLimit = parseInt(e.target.value);
+        if (isNaN(newLimit) || newLimit < 1) newLimit = 1;
+        note.limit = newLimit;
+        if (note.current >= note.limit) updateCompletion(note);
+        else if (note.completed) note.completed = false;
+        saveData();
+        renderNotesList();
+        updateCounterAndCard();
+      });
+      // Select button
+      const selectBtn = div.querySelector('.btn-select');
+      selectBtn.addEventListener('click', () => selectNote(note.id));
+      // Move up/down
+      const upBtn = div.querySelector('.up');
+      upBtn.addEventListener('click', () => {
+        if (idx > 0) { [notes[idx-1], notes[idx]] = [notes[idx], notes[idx-1]]; saveData(); renderNotesList(); }
+      });
+      const downBtn = div.querySelector('.down');
+      downBtn.addEventListener('click', () => {
+        if (idx < notes.length-1) { [notes[idx], notes[idx+1]] = [notes[idx+1], notes[idx]]; saveData(); renderNotesList(); }
+      });
+      // Delete
+      const delBtn = div.querySelector('.del');
+      delBtn.addEventListener('click', () => {
+        if (confirm('এই নোট মুছবেন?')) {
+          notes = notes.filter(n => n.id !== note.id);
+          if (selectedId === note.id) selectedId = null;
+          if (notes.length && !selectedId) selectedId = notes[0]?.id || null;
+          saveData();
+          renderNotesList();
+          updateCounterAndCard();
+        }
+      });
+      container.appendChild(div);
+    });
+    updateCounterAndCard();
+  }
+
+  function addNewNote() {
+    const newNote = {
+      id: nextId++,
+      text: "নতুন জিকির",
+      limit: 33,
+      current: 0,
+      completed: false
+    };
+    notes.push(newNote);
+    saveData();
+    renderNotesList();
+    if (!selectedId) selectNote(newNote.id);
+  }
+
+  function setGlobal() {
+    let val = parseInt(document.getElementById('globalLimitInput').value);
+    if (isNaN(val) || val < 1) val = 99;
+    globalLimit = val;
+    localStorage.setItem(STORAGE_GLOBAL, globalLimit);
+    showAlert(`🌍 গ্লোবাল সীমা ${globalLimit} সেট`);
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes));
+    if (selectedId) localStorage.setItem(STORAGE_SELECTED, selectedId);
+    else localStorage.removeItem(STORAGE_SELECTED);
+  }
+
+  function loadData() {
+    const savedNotes = localStorage.getItem(STORAGE_NOTES);
+    if (savedNotes) {
+      try {
+        let parsed = JSON.parse(savedNotes);
+        if (Array.isArray(parsed)) {
+          notes = parsed;
+          notes.forEach(n => {
+            if (n.limit === undefined) n.limit = 33;
+            if (n.current === undefined) n.current = 0;
+            if (n.completed === undefined) n.completed = false;
+            if (n.current >= n.limit) n.completed = true;
+          });
+          if (notes.length) nextId = Math.max(...notes.map(n => n.id), 0) + 1;
+          else nextId = 1;
+        } else initDefault();
+      } catch(e) { initDefault(); }
+    } else initDefault();
+    const savedSel = localStorage.getItem(STORAGE_SELECTED);
+    if (savedSel && notes.some(n => n.id == savedSel)) selectedId = parseInt(savedSel);
+    else selectedId = notes.length ? notes[0].id : null;
+    const savedGl = localStorage.getItem(STORAGE_GLOBAL);
+    if (savedGl && !isNaN(parseInt(savedGl))) globalLimit = parseInt(savedGl);
+    else globalLimit = 99;
+    document.getElementById('globalLimitInput').value = globalLimit;
+  }
+
+  function initDefault() {
+    notes = [
+      { id: nextId++, text: "سُبْحَانَ اللَّهِ (সুবহানাল্লাহ)", limit: 33, current: 0, completed: false },
+      { id: nextId++, text: "اَلْحَمْدُ لِلَّهِ (আলহামদুলিল্লাহ)", limit: 33, current: 0, completed: false },
+      { id: nextId++, text: "اللَّهُ أَكْبَرُ (আল্লাহু আকবার)", limit: 34, current: 0, completed: false },
+      { id: nextId++, text: "لَا إِلَٰهَ إِلَّا اللَّهُ", limit: 33, current: 0, completed: false }
+    ];
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function attachEvents() {
+    document.getElementById('incrementBtn').addEventListener('click', increment);
+    document.getElementById('decrementBtn').addEventListener('click', decrement);
+    document.getElementById('tapButton').addEventListener('click', increment);
+    document.getElementById('resetSelectedBtn').addEventListener('click', resetSelected);
+    document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+    document.getElementById('addNoteBtn').addEventListener('click', addNewNote);
+    document.getElementById('setGlobalBtn').addEventListener('click', setGlobal);
+  }
+
+  loadData();
+  attachEvents();
+  renderNotesList();
+  updateCounterAndCard();
+</script>
+</body>
+</html>
