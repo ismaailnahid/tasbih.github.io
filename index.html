@@ -306,9 +306,12 @@
             box-shadow: 0 1px 0 #b39562;
         }
 
+        /* উপরের/নিচে/ডিলিট বাটন এখন সম্পন্ন আইটেমেও কাজ করবে (ডিজেবল নয়) */
         .note-item.completed .action-icon {
-            opacity: 0.5;
-            pointer-events: none;
+            opacity: 1;
+            pointer-events: auto;
+            background: #d4c29b;
+            box-shadow: 0 3px 0 #a07d42;
         }
 
         .time-row {
@@ -367,8 +370,15 @@
         }
 
         @keyframes softPulse {
-            0% { opacity: 0.8; transform: scale(0.98); }
-            100% { opacity: 1; transform: scale(1); }
+            0% {
+                opacity: 0.8;
+                transform: scale(0.98);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .selected-card {
@@ -544,8 +554,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-container {
@@ -561,8 +576,15 @@
         }
 
         @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-icon {
@@ -622,11 +644,15 @@
             box-shadow: 0 1px 0 #2a1e12;
         }
 
-        /* Mobile Responsive */
         @media (max-width: 550px) {
-            .tasbih-pro { padding: var(--spacing-md); }
-            .note-item { padding: 12px; }
-            
+            .tasbih-pro {
+                padding: var(--spacing-md);
+            }
+
+            .note-item {
+                padding: 12px;
+            }
+
             .note-row {
                 display: grid;
                 grid-template-columns: auto auto;
@@ -634,39 +660,104 @@
                 align-items: start;
                 gap: 10px 10px;
             }
-            
+
             .serial-badge {
                 grid-area: serial;
                 width: 40px;
                 height: 40px;
                 font-size: 1rem;
             }
-            
+
             .note-actions {
                 grid-area: actions;
                 display: flex;
                 justify-content: flex-end;
                 gap: 6px;
             }
-            
-            .action-icon { width: 30px; height: 30px; font-size: 0.8rem; }
-            .note-middle { grid-area: middle; width: 100%; }
-            .note-text { width: 100%; border-radius: 18px; padding: 10px 12px; font-size: 14px; }
-            .limit-bar { width: 100%; justify-content: flex-start; border-radius: 18px; padding: 8px 10px; }
-            .limit-input { width: 55px; }
-            .btn-select { min-width: 95px; padding: 6px 12px; font-size: 11px; }
-            .time-row { width: 100%; border-radius: 18px; padding: 8px 10px; }
-            .time-picker { min-width: 105px; }
-            .counter-btn { width: 55px; height: 55px; font-size: 1.8rem; }
-            .counter-number { min-width: 100px; letter-spacing: 3px; }
-            .stat-item { padding: 4px 12px; font-size: 11px; }
+
+            .action-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+
+            .note-middle {
+                grid-area: middle;
+                width: 100%;
+            }
+
+            .note-text {
+                width: 100%;
+                border-radius: 18px;
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .limit-bar {
+                width: 100%;
+                justify-content: flex-start;
+                border-radius: 18px;
+                padding: 8px 10px;
+            }
+
+            .limit-input {
+                width: 55px;
+            }
+
+            .btn-select {
+                min-width: 95px;
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .time-row {
+                width: 100%;
+                border-radius: 18px;
+                padding: 8px 10px;
+            }
+
+            .time-picker {
+                min-width: 105px;
+            }
+
+            .counter-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.8rem;
+            }
+
+            .counter-number {
+                min-width: 100px;
+                letter-spacing: 3px;
+            }
+
+            .stat-item {
+                padding: 4px 12px;
+                font-size: 11px;
+            }
         }
 
         @media (max-width: 400px) {
-            .serial-badge { width: 38px; height: 38px; font-size: 0.95rem; }
-            .action-icon { width: 28px; height: 28px; font-size: 0.75rem; }
-            .btn-select { min-width: 90px; font-size: 10.5px; }
-            .time-picker { min-width: 100px; }
+            .serial-badge {
+                width: 38px;
+                height: 38px;
+                font-size: 0.95rem;
+            }
+
+            .action-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .btn-select {
+                min-width: 90px;
+                font-size: 10.5px;
+            }
+
+            .time-picker {
+                min-width: 100px;
+            }
         }
     </style>
 </head>
@@ -706,7 +797,7 @@
             <button id="resetSelectedBtn" class="reset-btn">⟳ রিসেট সিলেক্টেড</button>
             <button id="resetAllBtn" class="reset-btn" style="background:#6f4e2e;">🔄 রিসেট সব</button>
         </div>
-        <div class="footer">⏰ প্রতিটি নোটের জন্য সময় নির্ধারণ করুন | সম্পন্ন হলে পুনরায় ট্যাপ করবে না | সময় পার হলে "অতিবাহিত" দেখাবে</div>
+        <div class="footer">⏰ প্রতিটি নোটের জন্য সময় নির্ধারণ করুন | সম্পন্ন নোটেও উপরে/নিচে/মুছুন কাজ করবে</div>
     </div>
 
     <script>
@@ -716,17 +807,27 @@
         let selectedId = null;
         let timerInterval = null;
 
-        const STORAGE_NOTES = 'tasbih_time_organized_v5';
-        const STORAGE_SELECTED = 'tasbih_time_selected_v5';
+        const STORAGE_NOTES = 'tasbih_time_organized_v6';
+        const STORAGE_SELECTED = 'tasbih_time_selected_v6';
+
+        // ---------- Audio Playback Function ----------
+        function playSound(soundFileName) {
+            try {
+                const audio = new Audio(soundFileName);
+                audio.play().catch(e => console.warn("Audio play failed:", e));
+            } catch (e) {
+                console.warn("Audio error:", e);
+            }
+        }
 
         // ---------- Modal Function ----------
         function showConfirmModal(title, message, onConfirm) {
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
-            
+
             const modal = document.createElement('div');
             modal.className = 'modal-container';
-            
+
             modal.innerHTML = `
                 <div class="modal-icon">🗑️</div>
                 <div class="modal-title">${title}</div>
@@ -736,22 +837,22 @@
                     <button class="modal-btn confirm">মুছুন</button>
                 </div>
             `;
-            
+
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
-            
+
             const cancelBtn = modal.querySelector('.cancel');
             const confirmBtn = modal.querySelector('.confirm');
-            
+
             cancelBtn.addEventListener('click', () => {
                 overlay.remove();
             });
-            
+
             confirmBtn.addEventListener('click', () => {
                 overlay.remove();
                 onConfirm();
             });
-            
+
             overlay.addEventListener('click', (e) => {
                 if (e.target === overlay) overlay.remove();
             });
@@ -768,20 +869,15 @@
                 .replace(/'/g, '&#39;');
         }
 
-        // সঠিক টাইম ডিফারেন্স - এখন "অতিবাহিত" দেখাবে
         function getTimeDifferenceText(reminderTime) {
             if (!reminderTime || reminderTime === "") return null;
-            
             const now = new Date();
             const [reminderHour, reminderMinute] = reminderTime.split(':').map(Number);
-            
             let reminderDate = new Date();
             reminderDate.setHours(reminderHour, reminderMinute, 0, 0);
-            
             let diffMs = reminderDate - now;
             let diffMinutes = Math.floor(diffMs / (1000 * 60));
-            
-            // সময় পার হয়ে গেলে
+
             if (diffMinutes < 0) {
                 let passedMinutes = Math.abs(diffMinutes);
                 if (passedMinutes === 0) return `🔔 পড়ার সময়!`;
@@ -798,7 +894,6 @@
                 if (passedHours === 1) return `অতিবাহিত: ১ ঘণ্টা ${remainingMins} মিনিট`;
                 return `অতিবাহিত: ${passedHours} ঘণ্টা ${remainingMins} মিনিট`;
             }
-            // সময় বাকি থাকলে
             else if (diffMinutes === 0) {
                 return `🔔 পড়ার সময়!`;
             }
@@ -865,7 +960,6 @@
             const now = new Date();
             const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
             let hasChanges = false;
-            
             notes.forEach(note => {
                 if (note.reminderTime && note.reminderTime !== "" && !note.completed) {
                     if (note.reminderTime === currentTime) {
@@ -882,7 +976,6 @@
                     }
                 }
             });
-            
             if (hasChanges) {
                 saveData();
                 renderNotesList();
@@ -895,6 +988,7 @@
                 if (!note.completed) {
                     note.completed = true;
                     showAlert(`✨ "${note.text.substring(0, 35)}" সম্পন্ন হয়েছে! ✨`);
+                    playSound('thamun.mp3');
                     return true;
                 }
             } else {
@@ -906,33 +1000,28 @@
         }
 
         function changeCounter(delta) {
-            if (!selectedId) { 
-                showAlert("⚠️ একটি নোট সিলেক্ট করুন"); 
-                return false; 
+            if (!selectedId) {
+                showAlert("⚠️ একটি নোট সিলেক্ট করুন");
+                return false;
             }
-            
             const note = notes.find(n => n.id === selectedId);
-            if (!note) { 
-                selectedId = null; 
-                refreshUI(); 
-                return false; 
+            if (!note) {
+                selectedId = null;
+                refreshUI();
+                return false;
             }
-            
-            if (note.completed && delta > 0) { 
-                showAlert(`✅ "${note.text.substring(0, 30)}" ইতিমধ্যে সম্পন্ন! রিসেট করুন`); 
-                return false; 
+            if (note.completed && delta > 0) {
+                showAlert(`✅ "${note.text.substring(0, 30)}" ইতিমধ্যে সম্পন্ন! রিসেট করুন`);
+                return false;
             }
-            
             let newVal = note.current + delta;
             if (newVal < 0) newVal = 0;
-            if (newVal > note.limit) { 
-                if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`); 
-                return false; 
+            if (newVal > note.limit) {
+                if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`);
+                return false;
             }
-            
             note.current = newVal;
-            const completed = updateCompletion(note);
-            
+            updateCompletion(note);
             saveData();
             renderNotesList();
             updateCounterAndCard();
@@ -943,37 +1032,35 @@
         function decrement() { changeCounter(-1); }
 
         function resetSelected() {
-            if (!selectedId) { 
-                showAlert("কোন নোট সিলেক্ট নেই"); 
-                return; 
+            if (!selectedId) {
+                showAlert("কোন নোট সিলেক্ট নেই");
+                return;
             }
-            
             const note = notes.find(n => n.id === selectedId);
             if (note) {
-                const wasCompleted = note.completed;
-                note.current = 0;
-                note.completed = false;
-                saveData();
-                renderNotesList();
-                updateCounterAndCard();
-                if (wasCompleted) {
-                    showAlert(`🔄 "${note.text.substring(0, 30)}" রিসেট করে নতুন শুরু করুন`);
-                } else {
+                showConfirmModal('রিসেট নিশ্চিত করুন', `"${note.text.substring(0, 35)}" রিসেট করবেন?`, () => {
+                    note.current = 0;
+                    note.completed = false;
+                    saveData();
+                    renderNotesList();
+                    updateCounterAndCard();
                     showAlert(`🔄 "${note.text.substring(0, 30)}" রিসেট`);
-                }
+                    playSound('reset.mp3');
+                });
             }
         }
 
         function resetAll() {
             showConfirmModal('সব নোট রিসেট', 'সব নোটের কাউন্টার ০ করে দিবেন?', () => {
-                notes.forEach(n => { 
-                    n.current = 0; 
-                    n.completed = false; 
+                notes.forEach(n => {
+                    n.current = 0;
+                    n.completed = false;
                 });
                 saveData();
                 renderNotesList();
                 updateCounterAndCard();
                 showAlert("🔄 সব নোট রিসেট সম্পন্ন!");
+                playSound('reset.mp3');
             });
         }
 
@@ -993,7 +1080,7 @@
             const progressSpan = document.getElementById('selectedProgress');
             const timeStatusSpan = document.getElementById('selectedTimeStatus');
             const tapBtn = document.getElementById('tapButton');
-            
+
             if (selectedId) {
                 const note = notes.find(n => n.id === selectedId);
                 if (note) {
@@ -1001,29 +1088,20 @@
                     nameSpan.innerHTML = `📿 ${escapeHtml(note.text)} ${note.completed ? '<span class="completed-badge">✅ সম্পন্ন</span>' : ''}`;
                     limitSpan.innerText = note.limit;
                     progressSpan.innerText = `${note.current}/${note.limit}`;
-                    
-                    if (note.completed) {
-                        if (tapBtn) tapBtn.classList.add('disabled');
-                    } else {
-                        if (tapBtn) tapBtn.classList.remove('disabled');
-                    }
-                    
+                    if (note.completed) tapBtn?.classList.add('disabled');
+                    else tapBtn?.classList.remove('disabled');
                     if (note.reminderTime && note.reminderTime !== "") {
                         const timeDiffText = getTimeDifferenceText(note.reminderTime);
                         timeStatusSpan.innerHTML = `⏰ ${timeDiffText || note.reminderTime}`;
-                        if (timeDiffText === '🔔 পড়ার সময়!' && !note.completed) {
-                            timeStatusSpan.style.animation = 'softPulse 1s infinite';
-                        } else {
-                            timeStatusSpan.style.animation = 'none';
-                        }
-                    } else { 
+                        if (timeDiffText === '🔔 পড়ার সময়!' && !note.completed) timeStatusSpan.style.animation = 'softPulse 1s infinite';
+                        else timeStatusSpan.style.animation = 'none';
+                    } else {
                         timeStatusSpan.innerHTML = `⚙️ সেট নেই`;
                         timeStatusSpan.style.animation = 'none';
                     }
                     return;
                 }
             }
-            
             counterSpan.innerText = "0";
             nameSpan.innerHTML = '⚜️ কোন নোট সিলেক্ট নেই';
             limitSpan.innerText = '—';
@@ -1033,26 +1111,24 @@
             if (tapBtn) tapBtn.classList.remove('disabled');
         }
 
-        function updateSelectedCard() { 
-            updateCounterAndCard(); 
-        }
+        function updateSelectedCard() { updateCounterAndCard(); }
 
+        // ------------------- main rendering: up/down/del সবসময় কাজ করবে (completed হলেও) -------------------
         function renderNotesList() {
             const container = document.getElementById('notesList');
             if (!container) return;
             container.innerHTML = '';
-            
-            if (notes.length === 0) { 
-                container.innerHTML = '<div class="note-item" style="padding:16px; text-align:center;">➕ নোট যোগ করুন</div>'; 
-                return; 
+            if (notes.length === 0) {
+                container.innerHTML = '<div class="note-item" style="padding:16px; text-align:center;">➕ নোট যোগ করুন</div>';
+                return;
             }
-            
+
             notes.forEach((note, idx) => {
                 const timeDiffText = note.reminderTime ? getTimeDifferenceText(note.reminderTime) : null;
                 const isTimeMatch = timeDiffText === '🔔 পড়ার সময়!';
                 const isTimePassed = timeDiffText ? timeDiffText.startsWith('অতিবাহিত') : false;
                 const displayText = timeDiffText || (note.reminderTime || '⚙️ সেট নেই');
-                
+
                 const div = document.createElement('div');
                 div.className = `note-item ${note.completed ? 'completed' : ''}`;
                 div.innerHTML = `
@@ -1080,101 +1156,106 @@
                         <span class="time-status-badge ${isTimeMatch ? 'alert' : ''} ${isTimePassed ? 'passed' : ''}">⏰ ${displayText}</span>
                     </div>
                 `;
-                
+
+                // text edit (completed হলে disabled)
                 const textDiv = div.querySelector('.note-text');
                 if (!note.completed) {
-                    textDiv.addEventListener('blur', (e) => { 
-                        let newVal = e.target.innerText.trim(); 
-                        if (newVal !== note.text) { 
-                            note.text = newVal || "জিকির"; 
-                            saveData(); 
-                            renderNotesList(); 
-                            updateSelectedCard(); 
-                        } 
+                    textDiv.addEventListener('blur', (e) => {
+                        let newVal = e.target.innerText.trim();
+                        if (newVal !== note.text) {
+                            note.text = newVal || "জিকির";
+                            saveData();
+                            renderNotesList();
+                            updateSelectedCard();
+                        }
                     });
+                } else {
+                    textDiv.setAttribute('contenteditable', 'false');
                 }
-                
+
                 const limitInp = div.querySelector('.limit-input');
                 if (!note.completed) {
-                    limitInp.addEventListener('change', (e) => { 
-                        let newLimit = parseInt(e.target.value); 
-                        if (isNaN(newLimit) || newLimit < 1) newLimit = 1; 
+                    limitInp.addEventListener('change', (e) => {
+                        let newLimit = parseInt(e.target.value);
+                        if (isNaN(newLimit) || newLimit < 1) newLimit = 1;
                         note.limit = newLimit;
-                        if (note.current < note.limit && note.completed) {
-                            note.completed = false;
-                        }
-                        if (note.current >= note.limit) {
-                            note.completed = true;
-                        }
-                        saveData(); 
-                        renderNotesList(); 
-                        updateSelectedCard(); 
+                        if (note.current < note.limit && note.completed) note.completed = false;
+                        if (note.current >= note.limit) note.completed = true;
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
                     });
                 }
-                
+
                 const selectBtn = div.querySelector('.btn-select');
                 selectBtn.addEventListener('click', () => selectNote(note.id));
-                
+
                 const timePicker = div.querySelector('.time-picker');
                 if (!note.completed) {
-                    timePicker.addEventListener('change', (e) => { 
-                        note.reminderTime = e.target.value; 
-                        if (!note.reminderTime) note.reminderTime = ""; 
-                        note.lastAlertSent = null; 
-                        saveData(); 
-                        renderNotesList(); 
-                        updateSelectedCard(); 
+                    timePicker.addEventListener('change', (e) => {
+                        note.reminderTime = e.target.value;
+                        if (!note.reminderTime) note.reminderTime = "";
+                        note.lastAlertSent = null;
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
                     });
                 }
-                
+
+                // ---- UP / DOWN / DELETE (এখন সম্পন্ন আইটেমেও কাজ করবে) ----
                 const upBtn = div.querySelector('.up');
-                upBtn.addEventListener('click', () => { 
-                    if (idx > 0 && !note.completed) { 
-                        [notes[idx - 1], notes[idx]] = [notes[idx], notes[idx - 1]]; 
-                        saveData(); 
-                        renderNotesList(); 
-                    } 
+                upBtn.addEventListener('click', () => {
+                    if (idx > 0) {
+                        [notes[idx - 1], notes[idx]] = [notes[idx], notes[idx - 1]];
+                        saveData();
+                        renderNotesList();
+                        if (selectedId === note.id) selectedId = notes[idx - 1]?.id;
+                        else if (selectedId === notes[idx]?.id) selectedId = notes[idx]?.id;
+                        updateSelectedCard();
+                    }
                 });
-                
+
                 const downBtn = div.querySelector('.down');
-                downBtn.addEventListener('click', () => { 
-                    if (idx < notes.length - 1 && !note.completed) { 
-                        [notes[idx], notes[idx + 1]] = [notes[idx + 1], notes[idx]]; 
-                        saveData(); 
-                        renderNotesList(); 
-                    } 
+                downBtn.addEventListener('click', () => {
+                    if (idx < notes.length - 1) {
+                        [notes[idx], notes[idx + 1]] = [notes[idx + 1], notes[idx]];
+                        saveData();
+                        renderNotesList();
+                        if (selectedId === note.id) selectedId = notes[idx + 1]?.id;
+                        else if (selectedId === notes[idx]?.id) selectedId = notes[idx]?.id;
+                        updateSelectedCard();
+                    }
                 });
-                
+
                 const delBtn = div.querySelector('.del');
-                delBtn.addEventListener('click', () => { 
-                    showConfirmModal(
-                        'নোট মুছে ফেলুন', 
-                        `"${note.text.substring(0, 40)}" মুছে ফেলতে চান?`,
-                        () => {
-                            notes = notes.filter(n => n.id !== note.id); 
-                            if (selectedId === note.id) selectedId = null; 
-                            if (notes.length && !selectedId) selectedId = notes[0]?.id || null; 
-                            saveData(); 
-                            renderNotesList(); 
-                            updateSelectedCard(); 
+                delBtn.addEventListener('click', () => {
+                    showConfirmModal('নোট মুছে ফেলুন', `"${note.text.substring(0, 40)}" মুছে ফেলতে চান?`, () => {
+                        const wasSelected = (selectedId === note.id);
+                        notes = notes.filter(n => n.id !== note.id);
+                        if (wasSelected) {
+                            selectedId = notes.length ? notes[0]?.id : null;
                         }
-                    );
+                        if (notes.length && !selectedId) selectedId = notes[0]?.id;
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
+                    });
                 });
-                
+
                 container.appendChild(div);
             });
             updateSelectedCard();
         }
 
         function addNewNote() {
-            const newNote = { 
-                id: nextId++, 
-                text: "নতুন জিকির", 
-                limit: 33, 
-                current: 0, 
-                completed: false, 
-                reminderTime: "", 
-                lastAlertSent: null 
+            const newNote = {
+                id: nextId++,
+                text: "নতুন জিকির",
+                limit: 33,
+                current: 0,
+                completed: false,
+                reminderTime: "",
+                lastAlertSent: null
             };
             notes.push(newNote);
             saveData();
@@ -1195,34 +1276,22 @@
                     let parsed = JSON.parse(savedNotes);
                     if (Array.isArray(parsed)) {
                         notes = parsed;
-                        notes.forEach(n => { 
-                            if (n.limit === undefined) n.limit = 33; 
-                            if (n.current === undefined) n.current = 0; 
-                            if (n.completed === undefined) n.completed = false; 
-                            if (n.reminderTime === undefined) n.reminderTime = ""; 
-                            if (n.current >= n.limit) n.completed = true; 
+                        notes.forEach(n => {
+                            if (n.limit === undefined) n.limit = 33;
+                            if (n.current === undefined) n.current = 0;
+                            if (n.completed === undefined) n.completed = false;
+                            if (n.reminderTime === undefined) n.reminderTime = "";
+                            if (n.current >= n.limit) n.completed = true;
                         });
-                        if (notes.length) {
-                            nextId = Math.max(...notes.map(n => n.id), 0) + 1;
-                        } else {
-                            nextId = 1;
-                        }
-                    } else {
-                        initDefault();
-                    }
-                } catch (e) { 
-                    initDefault(); 
-                }
-            } else {
-                initDefault();
-            }
-            
+                        if (notes.length) nextId = Math.max(...notes.map(n => n.id), 0) + 1;
+                        else nextId = 1;
+                    } else initDefault();
+                } catch (e) { initDefault(); }
+            } else { initDefault(); }
+
             const savedSel = localStorage.getItem(STORAGE_SELECTED);
-            if (savedSel && notes.some(n => n.id == savedSel)) {
-                selectedId = parseInt(savedSel);
-            } else {
-                selectedId = notes.length ? notes[0].id : null;
-            }
+            if (savedSel && notes.some(n => n.id == savedSel)) selectedId = parseInt(savedSel);
+            else selectedId = notes.length ? notes[0].id : null;
         }
 
         function initDefault() {
@@ -1233,9 +1302,9 @@
             ];
         }
 
-        function refreshUI() { 
-            renderNotesList(); 
-            updateCounterAndCard(); 
+        function refreshUI() {
+            renderNotesList();
+            updateCounterAndCard();
         }
 
         function startTimer() {
@@ -1245,7 +1314,6 @@
                 renderNotesList();
                 updateCounterAndCard();
             }, 60000);
-            
             checkTimeAlerts();
             renderNotesList();
             updateCounterAndCard();
@@ -1260,7 +1328,6 @@
             document.getElementById('addNoteBtn').addEventListener('click', addNewNote);
         }
 
-        // initialization
         loadData();
         attachEvents();
         renderNotesList();
