@@ -963,27 +963,29 @@
         let selectedId = null;
         let timerInterval = null;
 
-        const STORAGE_NOTES = 'tasbih_time_organized_v7_dynamic_beads';
-        const STORAGE_SELECTED = 'tasbih_time_selected_v7_dynamic_beads';
+        const STORAGE_NOTES = 'tasbih_time_organized_v8_fixed_alerts_cleanup';
+        const STORAGE_SELECTED = 'tasbih_time_selected_v8_fixed_alerts';
 
-        // ---------- Audio Playback Function ----------
+        // Alert deduplication per minute tracker (fix: alertTriggeredThisMinute)
+        let lastAlertMinuteKey = null; // format "HH:MM"
+        
+        function getCurrentMinuteKey() {
+            const now = new Date();
+            return `${now.getHours()}:${now.getMinutes()}`;
+        }
+
         function playSound(soundFileName) {
             try {
                 const audio = new Audio(soundFileName);
                 audio.play().catch(e => console.warn("Audio play failed:", e));
-            } catch (e) {
-                console.warn("Audio error:", e);
-            }
+            } catch (e) {}
         }
 
-        // ---------- Modal Function ----------
         function showConfirmModal(title, message, onConfirm) {
             const overlay = document.createElement('div');
             overlay.className = 'modal-overlay';
-
             const modal = document.createElement('div');
             modal.className = 'modal-container';
-
             modal.innerHTML = `
                 <div class="modal-icon">🗑️</div>
                 <div class="modal-title">${title}</div>
@@ -993,36 +995,16 @@
                     <button class="modal-btn confirm">মুছুন</button>
                 </div>
             `;
-
             overlay.appendChild(modal);
             document.body.appendChild(overlay);
-
-            const cancelBtn = modal.querySelector('.cancel');
-            const confirmBtn = modal.querySelector('.confirm');
-
-            cancelBtn.addEventListener('click', () => {
-                overlay.remove();
-            });
-
-            confirmBtn.addEventListener('click', () => {
-                overlay.remove();
-                onConfirm();
-            });
-
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.remove();
-            });
+            modal.querySelector('.cancel').addEventListener('click', () => overlay.remove());
+            modal.querySelector('.confirm').addEventListener('click', () => { overlay.remove(); onConfirm(); });
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
         }
 
-        // ---------- Helper Functions ----------
         function escapeHtml(str) {
             if (!str) return '';
-            return str
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
         }
 
         function getTimeDifferenceText(reminderTime) {
@@ -1033,38 +1015,21 @@
             reminderDate.setHours(reminderHour, reminderMinute, 0, 0);
             let diffMs = reminderDate - now;
             let diffMinutes = Math.floor(diffMs / (1000 * 60));
-
             if (diffMinutes < 0) {
                 let passedMinutes = Math.abs(diffMinutes);
                 if (passedMinutes === 0) return `🔔 পড়ার সময়!`;
-                if (passedMinutes < 60) {
-                    if (passedMinutes === 1) return `অতিবাহিত: ১ মিনিট`;
-                    return `অতিবাহিত: ${passedMinutes} মিনিট`;
-                }
+                if (passedMinutes < 60) return `অতিবাহিত: ${passedMinutes} মিনিট`;
                 let passedHours = Math.floor(passedMinutes / 60);
                 let remainingMins = passedMinutes % 60;
-                if (remainingMins === 0) {
-                    if (passedHours === 1) return `অতিবাহিত: ১ ঘণ্টা`;
-                    return `অতিবাহিত: ${passedHours} ঘণ্টা`;
-                }
-                if (passedHours === 1) return `অতিবাহিত: ১ ঘণ্টা ${remainingMins} মিনিট`;
+                if (remainingMins === 0) return `অতিবাহিত: ${passedHours} ঘণ্টা`;
                 return `অতিবাহিত: ${passedHours} ঘণ্টা ${remainingMins} মিনিট`;
             }
-            else if (diffMinutes === 0) {
-                return `🔔 পড়ার সময়!`;
-            }
-            else if (diffMinutes < 60) {
-                if (diffMinutes === 1) return `বাকি: ১ মিনিট`;
-                return `বাকি: ${diffMinutes} মিনিট`;
-            }
+            else if (diffMinutes === 0) return `🔔 পড়ার সময়!`;
+            else if (diffMinutes < 60) return `বাকি: ${diffMinutes} মিনিট`;
             else {
                 let diffHours = Math.floor(diffMinutes / 60);
                 let remainingMins = diffMinutes % 60;
-                if (remainingMins === 0) {
-                    if (diffHours === 1) return `বাকি: ১ ঘণ্টা`;
-                    return `বাকি: ${diffHours} ঘণ্টা`;
-                }
-                if (diffHours === 1) return `বাকি: ১ ঘণ্টা ${remainingMins} মিনিট`;
+                if (remainingMins === 0) return `বাকি: ${diffHours} ঘণ্টা`;
                 return `বাকি: ${diffHours} ঘণ্টা ${remainingMins} মিনিট`;
             }
         }
@@ -1086,9 +1051,7 @@
         }
 
         function vibrateNow(ms = 120) {
-            if ("vibrate" in navigator) {
-                navigator.vibrate(ms);
-            }
+            if ("vibrate" in navigator) navigator.vibrate(ms);
         }
 
         function showAlert(msg, isTimeAlert = false) {
@@ -1109,24 +1072,24 @@
             div.style.backdropFilter = 'blur(20px)';
             div.style.zIndex = '10000';
             div.style.border = '1px solid #efcd85';
-            div.style.transition = 'all .25s ease';
             document.body.appendChild(div);
             setTimeout(() => { div.style.transform = 'translate(-50%, -50%) scale(1)'; }, 10);
             playBeep();
-            setTimeout(() => {
-                div.style.opacity = '0';
-                setTimeout(() => div.remove(), 400);
-            }, 2200);
+            setTimeout(() => { div.style.opacity = '0'; setTimeout(() => div.remove(), 400); }, 2200);
         }
 
+        // FIX: duplicate time alert within same minute prevented using lastAlertMinuteKey
         function checkTimeAlerts() {
             const now = new Date();
             const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            const currentMinuteKey = getCurrentMinuteKey();
             let hasChanges = false;
+            
             notes.forEach(note => {
                 if (note.reminderTime && note.reminderTime !== "" && !note.completed) {
                     if (note.reminderTime === currentTime) {
-                        if (!note.lastAlertSent || note.lastAlertSent !== currentTime) {
+                        // duplicate prevention: only alert if different minute key or never alerted this minute
+                        if (lastAlertMinuteKey !== currentMinuteKey) {
                             note.lastAlertSent = currentTime;
                             hasChanges = true;
                             showAlert(`⏰ "${note.text.substring(0, 35)}" পড়ার সময়!`, true);
@@ -1139,8 +1102,14 @@
                     }
                 }
             });
-            if (hasChanges) {
+            // Update global minute tracker after alerts processed
+            if (hasChanges || lastAlertMinuteKey !== currentMinuteKey) {
+                lastAlertMinuteKey = currentMinuteKey;
                 saveData();
+                renderNotesList();
+                updateSelectedCard();
+            } else {
+                // still need UI sync maybe
                 renderNotesList();
                 updateSelectedCard();
             }
@@ -1156,16 +1125,11 @@
                     return true;
                 }
             } else {
-                if (note.completed) {
-                    note.completed = false;
-                }
+                if (note.completed) note.completed = false;
             }
             return false;
         }
 
-        // =========================
-        // TAP ANIMATION
-        // =========================
         function animateTapButton() {
             const tapBtn = document.getElementById('tapButton');
             if (!tapBtn) return;
@@ -1174,21 +1138,14 @@
             tapBtn.classList.add('tap-pop');
         }
 
-        // =========================
-        // DYNAMIC TASBIH RENDER
-        // যত limit তত bead
-        // =========================
         function renderTasbihVisual() {
             const beadsWrap = document.getElementById('tasbihBeads');
             const emptyEl = document.getElementById('tasbihEmpty');
             const totalEl = document.getElementById('beadTotal');
             const doneEl = document.getElementById('beadDone');
             const leftEl = document.getElementById('beadLeft');
-
             if (!beadsWrap) return;
-
             beadsWrap.innerHTML = '';
-
             if (!selectedId) {
                 emptyEl.style.display = 'block';
                 totalEl.textContent = '0';
@@ -1196,7 +1153,6 @@
                 leftEl.textContent = '0';
                 return;
             }
-
             const note = notes.find(n => n.id === selectedId);
             if (!note) {
                 emptyEl.style.display = 'block';
@@ -1205,103 +1161,59 @@
                 leftEl.textContent = '0';
                 return;
             }
-
             const total = Math.max(1, parseInt(note.limit) || 1);
             const current = Math.max(0, Math.min(note.current, total));
-
             emptyEl.style.display = 'none';
-
             totalEl.textContent = total;
             doneEl.textContent = current;
             leftEl.textContent = Math.max(0, total - current);
-
             for (let i = 0; i < total; i++) {
                 const bead = document.createElement('div');
                 bead.className = 'bead';
-
                 if (i < current) bead.classList.add('active');
-
-                // current bead highlight
-                if (current > 0 && i === current - 1) {
-                    bead.classList.add('current');
-                }
-
+                if (current > 0 && i === current - 1) bead.classList.add('current');
                 beadsWrap.appendChild(bead);
-
                 if (i < total - 1) {
                     const connector = document.createElement('div');
                     connector.className = 'bead connector';
                     beadsWrap.appendChild(connector);
                 }
             }
-
-            requestAnimationFrame(() => {
-                scrollTasbihToCurrent();
-            });
+            requestAnimationFrame(() => scrollTasbihToCurrent());
         }
 
         function scrollTasbihToCurrent() {
             const track = document.getElementById('tasbihTrack');
             const beadsWrap = document.getElementById('tasbihBeads');
-
             if (!track || !beadsWrap || !selectedId) return;
-
             const note = notes.find(n => n.id === selectedId);
             if (!note) return;
-
             const beadEls = beadsWrap.querySelectorAll('.bead:not(.connector)');
             if (!beadEls.length) return;
-
             let currentIndex = Math.max(0, Math.min(note.current - 1, beadEls.length - 1));
             if (note.current <= 0) currentIndex = 0;
-
             const currentBead = beadEls[currentIndex];
             if (!currentBead) return;
-
             const trackWidth = track.clientWidth;
             const beadCenter = currentBead.offsetLeft + currentBead.offsetWidth / 2;
             let translateX = trackWidth / 2 - beadCenter;
-
             const maxTranslate = 0;
             const minTranslate = trackWidth - beadsWrap.scrollWidth - 16;
-
             if (translateX > maxTranslate) translateX = maxTranslate;
             if (translateX < minTranslate) translateX = minTranslate;
-
             beadsWrap.style.transform = `translateX(${translateX}px)`;
         }
 
         function changeCounter(delta) {
-            if (!selectedId) {
-                showAlert("⚠️ একটি নোট সিলেক্ট করুন");
-                return false;
-            }
+            if (!selectedId) { showAlert("⚠️ একটি নোট সিলেক্ট করুন"); return false; }
             const note = notes.find(n => n.id === selectedId);
-            if (!note) {
-                selectedId = null;
-                refreshUI();
-                return false;
-            }
-            if (note.completed && delta > 0) {
-                showAlert(`✅ "${note.text.substring(0, 30)}" ইতিমধ্যে সম্পন্ন! রিসেট করুন`);
-                return false;
-            }
-
+            if (!note) { selectedId = null; refreshUI(); return false; }
+            if (note.completed && delta > 0) { showAlert(`✅ "${note.text.substring(0, 30)}" ইতিমধ্যে সম্পন্ন! রিসেট করুন`); return false; }
             let newVal = note.current + delta;
             if (newVal < 0) newVal = 0;
-
-            if (newVal > note.limit) {
-                if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`);
-                return false;
-            }
-
+            if (newVal > note.limit) { if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`); return false; }
             note.current = newVal;
-
-            if (delta > 0) {
-                animateTapButton();
-                vibrateNow(35);
-            }
-
+            if (delta > 0) { animateTapButton(); vibrateNow(35); }
             updateCompletion(note);
             saveData();
             renderNotesList();
@@ -1309,15 +1221,11 @@
             renderTasbihVisual();
             return true;
         }
-
         function increment() { changeCounter(1); }
         function decrement() { changeCounter(-1); }
 
         function resetSelected() {
-            if (!selectedId) {
-                showAlert("কোন নোট সিলেক্ট নেই");
-                return;
-            }
+            if (!selectedId) { showAlert("কোন নোট সিলেক্ট নেই"); return; }
             const note = notes.find(n => n.id === selectedId);
             if (note) {
                 showConfirmModal('রিসেট নিশ্চিত করুন', `"${note.text.substring(0, 35)}" রিসেট করবেন?`, () => {
@@ -1335,10 +1243,7 @@
 
         function resetAll() {
             showConfirmModal('সব নোট রিসেট', 'সব নোটের কাউন্টার ০ করে দিবেন?', () => {
-                notes.forEach(n => {
-                    n.current = 0;
-                    n.completed = false;
-                });
+                notes.forEach(n => { n.current = 0; n.completed = false; });
                 saveData();
                 renderNotesList();
                 updateCounterAndCard();
@@ -1365,7 +1270,6 @@
             const progressSpan = document.getElementById('selectedProgress');
             const timeStatusSpan = document.getElementById('selectedTimeStatus');
             const tapBtn = document.getElementById('tapButton');
-
             if (selectedId) {
                 const note = notes.find(n => n.id === selectedId);
                 if (note) {
@@ -1380,10 +1284,7 @@
                         timeStatusSpan.innerHTML = `⏰ ${timeDiffText || note.reminderTime}`;
                         if (timeDiffText === '🔔 পড়ার সময়!' && !note.completed) timeStatusSpan.style.animation = 'softPulse 1s infinite';
                         else timeStatusSpan.style.animation = 'none';
-                    } else {
-                        timeStatusSpan.innerHTML = `⚙️ সেট নেই`;
-                        timeStatusSpan.style.animation = 'none';
-                    }
+                    } else { timeStatusSpan.innerHTML = `⚙️ সেট নেই`; timeStatusSpan.style.animation = 'none'; }
                     return;
                 }
             }
@@ -1402,17 +1303,12 @@
             const container = document.getElementById('notesList');
             if (!container) return;
             container.innerHTML = '';
-            if (notes.length === 0) {
-                container.innerHTML = '<div class="note-item" style="padding:16px; text-align:center;">➕ নোট যোগ করুন</div>';
-                return;
-            }
-
+            if (notes.length === 0) { container.innerHTML = '<div class="note-item" style="padding:16px; text-align:center;">➕ নোট যোগ করুন</div>'; return; }
             notes.forEach((note, idx) => {
                 const timeDiffText = note.reminderTime ? getTimeDifferenceText(note.reminderTime) : null;
                 const isTimeMatch = timeDiffText === '🔔 পড়ার সময়!';
                 const isTimePassed = timeDiffText ? timeDiffText.startsWith('অতিবাহিত') : false;
                 const displayText = timeDiffText || (note.reminderTime || '⚙️ সেট নেই');
-
                 const div = document.createElement('div');
                 div.className = `note-item ${note.completed ? 'completed' : ''}`;
                 div.innerHTML = `
@@ -1440,106 +1336,42 @@
                         <span class="time-status-badge ${isTimeMatch ? 'alert' : ''} ${isTimePassed ? 'passed' : ''}">⏰ ${displayText}</span>
                     </div>
                 `;
-
                 const textDiv = div.querySelector('.note-text');
                 if (!note.completed) {
-                    textDiv.addEventListener('blur', (e) => {
-                        let newVal = e.target.innerText.trim();
-                        if (newVal !== note.text) {
-                            note.text = newVal || "জিকির";
-                            saveData();
-                            renderNotesList();
-                            updateSelectedCard();
-                        }
-                    });
-                } else {
-                    textDiv.setAttribute('contenteditable', 'false');
-                }
-
+                    textDiv.addEventListener('blur', (e) => { let newVal = e.target.innerText.trim(); if (newVal !== note.text) { note.text = newVal || "জিকির"; saveData(); renderNotesList(); updateSelectedCard(); } });
+                } else { textDiv.setAttribute('contenteditable', 'false'); }
                 const limitInp = div.querySelector('.limit-input');
                 if (!note.completed) {
-                    limitInp.addEventListener('change', (e) => {
-                        let newLimit = parseInt(e.target.value);
-                        if (isNaN(newLimit) || newLimit < 1) newLimit = 1;
-                        note.limit = newLimit;
-
-                        if (note.current > note.limit) note.current = note.limit;
-                        if (note.current < note.limit && note.completed) note.completed = false;
-                        if (note.current >= note.limit) note.completed = true;
-
-                        saveData();
-                        renderNotesList();
-                        updateSelectedCard();
-                        renderTasbihVisual();
-                    });
+                    limitInp.addEventListener('change', (e) => { let newLimit = parseInt(e.target.value); if (isNaN(newLimit) || newLimit < 1) newLimit = 1; note.limit = newLimit; if (note.current > note.limit) note.current = note.limit; if (note.current < note.limit && note.completed) note.completed = false; if (note.current >= note.limit) note.completed = true; saveData(); renderNotesList(); updateSelectedCard(); renderTasbihVisual(); });
                 }
-
-                const selectBtn = div.querySelector('.btn-select');
-                selectBtn.addEventListener('click', () => selectNote(note.id));
-
+                div.querySelector('.btn-select').addEventListener('click', () => selectNote(note.id));
                 const timePicker = div.querySelector('.time-picker');
                 if (!note.completed) {
-                    timePicker.addEventListener('change', (e) => {
-                        note.reminderTime = e.target.value;
-                        if (!note.reminderTime) note.reminderTime = "";
-                        note.lastAlertSent = null;
-                        saveData();
-                        renderNotesList();
-                        updateSelectedCard();
-                    });
+                    timePicker.addEventListener('change', (e) => { note.reminderTime = e.target.value; if (!note.reminderTime) note.reminderTime = ""; note.lastAlertSent = null; saveData(); renderNotesList(); updateSelectedCard(); });
                 }
-
-                const upBtn = div.querySelector('.up');
-                upBtn.addEventListener('click', () => {
-                    if (idx > 0) {
-                        [notes[idx - 1], notes[idx]] = [notes[idx], notes[idx - 1]];
-                        saveData();
-                        renderNotesList();
-                        updateSelectedCard();
-                    }
-                });
-
-                const downBtn = div.querySelector('.down');
-                downBtn.addEventListener('click', () => {
-                    if (idx < notes.length - 1) {
-                        [notes[idx], notes[idx + 1]] = [notes[idx + 1], notes[idx]];
-                        saveData();
-                        renderNotesList();
-                        updateSelectedCard();
-                    }
-                });
-
-                const delBtn = div.querySelector('.del');
-                delBtn.addEventListener('click', () => {
+                div.querySelector('.up').addEventListener('click', () => { if (idx > 0) { [notes[idx - 1], notes[idx]] = [notes[idx], notes[idx - 1]]; saveData(); renderNotesList(); updateSelectedCard(); } });
+                div.querySelector('.down').addEventListener('click', () => { if (idx < notes.length - 1) { [notes[idx], notes[idx + 1]] = [notes[idx + 1], notes[idx]]; saveData(); renderNotesList(); updateSelectedCard(); } });
+                div.querySelector('.del').addEventListener('click', () => {
                     showConfirmModal('নোট মুছে ফেলুন', `"${note.text.substring(0, 40)}" মুছে ফেলতে চান?`, () => {
                         const wasSelected = (selectedId === note.id);
                         notes = notes.filter(n => n.id !== note.id);
-                        if (wasSelected) {
-                            selectedId = notes.length ? notes[0]?.id : null;
-                        }
-                        if (notes.length && !selectedId) selectedId = notes[0]?.id;
+                        if (wasSelected) { selectedId = notes.length ? notes[0]?.id : null; if (selectedId === undefined) selectedId = null; }
+                        // STORAGE CLEANUP: if selectedId becomes null, remove from localStorage (fix storage cleanup)
+                        if (selectedId === null) localStorage.removeItem(STORAGE_SELECTED);
+                        else localStorage.setItem(STORAGE_SELECTED, selectedId);
                         saveData();
                         renderNotesList();
                         updateSelectedCard();
                         renderTasbihVisual();
                     });
                 });
-
                 container.appendChild(div);
             });
             updateSelectedCard();
         }
 
         function addNewNote() {
-            const newNote = {
-                id: nextId++,
-                text: "নতুন জিকির",
-                limit: 33,
-                current: 0,
-                completed: false,
-                reminderTime: "",
-                lastAlertSent: null
-            };
+            const newNote = { id: nextId++, text: "নতুন জিকির", limit: 33, current: 0, completed: false, reminderTime: "", lastAlertSent: null };
             notes.push(newNote);
             saveData();
             renderNotesList();
@@ -1549,7 +1381,8 @@
 
         function saveData() {
             localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes));
-            if (selectedId) localStorage.setItem(STORAGE_SELECTED, selectedId);
+            if (selectedId !== null) localStorage.setItem(STORAGE_SELECTED, selectedId);
+            else localStorage.removeItem(STORAGE_SELECTED);
         }
 
         function loadData() {
@@ -1559,22 +1392,17 @@
                     let parsed = JSON.parse(savedNotes);
                     if (Array.isArray(parsed)) {
                         notes = parsed;
-                        notes.forEach(n => {
-                            if (n.limit === undefined) n.limit = 33;
-                            if (n.current === undefined) n.current = 0;
-                            if (n.completed === undefined) n.completed = false;
-                            if (n.reminderTime === undefined) n.reminderTime = "";
-                            if (n.current >= n.limit) n.completed = true;
-                        });
+                        notes.forEach(n => { if (n.limit === undefined) n.limit = 33; if (n.current === undefined) n.current = 0; if (n.completed === undefined) n.completed = false; if (n.reminderTime === undefined) n.reminderTime = ""; if (n.current >= n.limit) n.completed = true; });
                         if (notes.length) nextId = Math.max(...notes.map(n => n.id), 0) + 1;
                         else nextId = 1;
                     } else initDefault();
                 } catch (e) { initDefault(); }
             } else { initDefault(); }
-
             const savedSel = localStorage.getItem(STORAGE_SELECTED);
             if (savedSel && notes.some(n => n.id == savedSel)) selectedId = parseInt(savedSel);
             else selectedId = notes.length ? notes[0].id : null;
+            // Cleanup storage if selectedId is null after load
+            if (selectedId === null) localStorage.removeItem(STORAGE_SELECTED);
         }
 
         function initDefault() {
@@ -1585,24 +1413,12 @@
             ];
         }
 
-        function refreshUI() {
-            renderNotesList();
-            updateCounterAndCard();
-            renderTasbihVisual();
-        }
+        function refreshUI() { renderNotesList(); updateCounterAndCard(); renderTasbihVisual(); }
 
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                checkTimeAlerts();
-                renderNotesList();
-                updateCounterAndCard();
-            }, 60000);
-
-            checkTimeAlerts();
-            renderNotesList();
-            updateCounterAndCard();
-            renderTasbihVisual();
+            timerInterval = setInterval(() => { checkTimeAlerts(); renderNotesList(); updateCounterAndCard(); }, 60000);
+            checkTimeAlerts(); renderNotesList(); updateCounterAndCard(); renderTasbihVisual();
         }
 
         function attachEvents() {
@@ -1612,10 +1428,7 @@
             document.getElementById('resetSelectedBtn').addEventListener('click', resetSelected);
             document.getElementById('resetAllBtn').addEventListener('click', resetAll);
             document.getElementById('addNoteBtn').addEventListener('click', addNewNote);
-
-            window.addEventListener('resize', () => {
-                scrollTasbihToCurrent();
-            });
+            window.addEventListener('resize', () => { scrollTasbihToCurrent(); });
         }
 
         loadData();

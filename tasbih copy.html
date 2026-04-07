@@ -306,7 +306,6 @@
             box-shadow: 0 1px 0 #b39562;
         }
 
-        /* উপরের/নিচে/ডিলিট বাটন এখন সম্পন্ন আইটেমেও কাজ করবে (ডিজেবল নয়) */
         .note-item.completed .action-icon {
             opacity: 1;
             pointer-events: auto;
@@ -427,6 +426,118 @@
             margin-left: 10px;
         }
 
+        /* =========================
+           TASBIH VISUAL TRACK
+        ========================= */
+        .tasbih-visual-wrap {
+            margin: 10px 0 20px;
+            padding: 18px 16px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(30, 26, 15, 0.95), rgba(17, 14, 8, 0.92));
+            border: 1px solid rgba(243, 207, 132, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 231, 170, 0.08), 0 12px 30px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+        }
+
+        .tasbih-track {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .tasbih-beads {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            will-change: transform;
+            transition: transform 0.38s cubic-bezier(.22, 1, .36, 1);
+            padding-inline: 8px;
+        }
+
+        .bead {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+            background:
+                radial-gradient(circle at 30% 28%, #fff1c6 0%, #e8c978 18%, #b78b41 55%, #7b5a24 100%);
+            box-shadow:
+                inset -3px -4px 6px rgba(0, 0, 0, 0.28),
+                inset 2px 2px 5px rgba(255, 244, 208, 0.55),
+                0 5px 10px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 228, 160, 0.22);
+            transform: scale(0.92);
+            opacity: 0.35;
+            transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.28s ease, filter 0.28s ease;
+        }
+
+        .bead::after {
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border-radius: 50%;
+            border: 1px dashed rgba(85, 55, 16, 0.28);
+        }
+
+        .bead.active {
+            opacity: 1;
+            transform: scale(1);
+            filter: saturate(1.08);
+        }
+
+        .bead.current {
+            transform: scale(1.16);
+            box-shadow:
+                inset -3px -4px 6px rgba(0, 0, 0, 0.28),
+                inset 2px 2px 5px rgba(255, 244, 208, 0.55),
+                0 0 0 4px rgba(255, 220, 120, 0.15),
+                0 0 18px rgba(255, 214, 110, 0.45),
+                0 8px 18px rgba(0, 0, 0, 0.42);
+        }
+
+        .bead.connector {
+            width: 16px;
+            height: 4px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #5e4319, #d7b36b, #5e4319);
+            box-shadow: inset 0 1px 1px rgba(255, 241, 201, 0.35);
+            opacity: 0.55;
+            border: none;
+        }
+
+        .tasbih-meta {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tasbih-meta-chip {
+            background: rgba(255, 236, 179, 0.08);
+            color: #ffecb3;
+            border: 1px solid rgba(255, 236, 179, 0.12);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: var(--font-xxs);
+            font-weight: 600;
+        }
+
+        .tasbih-empty {
+            width: 100%;
+            text-align: center;
+            color: #d8bf7f;
+            font-size: var(--font-sm);
+            opacity: 0.85;
+            padding: 18px 0;
+        }
+
         .counter-area {
             text-align: center;
             margin: var(--spacing-sm) 0;
@@ -502,6 +613,24 @@
             opacity: 0.5;
             transform: none;
             pointer-events: none;
+        }
+
+        .main-tap.tap-pop {
+            animation: tapPulse 0.22s ease;
+        }
+
+        @keyframes tapPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(0.97);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .action-group {
@@ -735,6 +864,15 @@
                 padding: 4px 12px;
                 font-size: 11px;
             }
+
+            .bead {
+                width: 30px;
+                height: 30px;
+            }
+
+            .bead.connector {
+                width: 12px;
+            }
         }
 
         @media (max-width: 400px) {
@@ -757,6 +895,11 @@
 
             .time-picker {
                 min-width: 100px;
+            }
+
+            .bead {
+                width: 28px;
+                height: 28px;
             }
         }
     </style>
@@ -783,6 +926,19 @@
             </div>
         </div>
 
+        <!-- ===== Dynamic Tasbih Visual ===== -->
+        <div class="tasbih-visual-wrap">
+            <div class="tasbih-track" id="tasbihTrack">
+                <div class="tasbih-empty" id="tasbihEmpty">📿 নোট সিলেক্ট করলে তাসবিহর দানা দেখা যাবে</div>
+                <div class="tasbih-beads" id="tasbihBeads"></div>
+            </div>
+            <div class="tasbih-meta">
+                <div class="tasbih-meta-chip">📿 দানা: <span id="beadTotal">0</span></div>
+                <div class="tasbih-meta-chip">✨ সম্পন্ন: <span id="beadDone">0</span></div>
+                <div class="tasbih-meta-chip">🎯 বাকি: <span id="beadLeft">0</span></div>
+            </div>
+        </div>
+
         <div class="counter-area">
             <div class="counter-flex">
                 <button id="decrementBtn" class="counter-btn">−</button>
@@ -797,7 +953,7 @@
             <button id="resetSelectedBtn" class="reset-btn">⟳ রিসেট সিলেক্টেড</button>
             <button id="resetAllBtn" class="reset-btn" style="background:#6f4e2e;">🔄 রিসেট সব</button>
         </div>
-        <div class="footer">⏰ প্রতিটি নোটের জন্য সময় নির্ধারণ করুন | সম্পন্ন নোটেও উপরে/নিচে/মুছুন কাজ করবে</div>
+        <div class="footer">⏰ প্রতিটি নোটের জন্য সময় নির্ধারণ করুন | Tap করলে যত limit থাকবে ঠিক তত bead দেখাবে</div>
     </div>
 
     <script>
@@ -807,8 +963,8 @@
         let selectedId = null;
         let timerInterval = null;
 
-        const STORAGE_NOTES = 'tasbih_time_organized_v6';
-        const STORAGE_SELECTED = 'tasbih_time_selected_v6';
+        const STORAGE_NOTES = 'tasbih_time_organized_v7_dynamic_beads';
+        const STORAGE_SELECTED = 'tasbih_time_selected_v7_dynamic_beads';
 
         // ---------- Audio Playback Function ----------
         function playSound(soundFileName) {
@@ -929,6 +1085,12 @@
             } catch (e) { }
         }
 
+        function vibrateNow(ms = 120) {
+            if ("vibrate" in navigator) {
+                navigator.vibrate(ms);
+            }
+        }
+
         function showAlert(msg, isTimeAlert = false) {
             const div = document.createElement('div');
             div.textContent = msg;
@@ -947,6 +1109,7 @@
             div.style.backdropFilter = 'blur(20px)';
             div.style.zIndex = '10000';
             div.style.border = '1px solid #efcd85';
+            div.style.transition = 'all .25s ease';
             document.body.appendChild(div);
             setTimeout(() => { div.style.transform = 'translate(-50%, -50%) scale(1)'; }, 10);
             playBeep();
@@ -989,6 +1152,7 @@
                     note.completed = true;
                     showAlert(`✨ "${note.text.substring(0, 35)}" সম্পন্ন হয়েছে! ✨`);
                     playSound('thamun.mp3');
+                    vibrateNow([120, 50, 120]);
                     return true;
                 }
             } else {
@@ -997,6 +1161,114 @@
                 }
             }
             return false;
+        }
+
+        // =========================
+        // TAP ANIMATION
+        // =========================
+        function animateTapButton() {
+            const tapBtn = document.getElementById('tapButton');
+            if (!tapBtn) return;
+            tapBtn.classList.remove('tap-pop');
+            void tapBtn.offsetWidth;
+            tapBtn.classList.add('tap-pop');
+        }
+
+        // =========================
+        // DYNAMIC TASBIH RENDER
+        // যত limit তত bead
+        // =========================
+        function renderTasbihVisual() {
+            const beadsWrap = document.getElementById('tasbihBeads');
+            const emptyEl = document.getElementById('tasbihEmpty');
+            const totalEl = document.getElementById('beadTotal');
+            const doneEl = document.getElementById('beadDone');
+            const leftEl = document.getElementById('beadLeft');
+
+            if (!beadsWrap) return;
+
+            beadsWrap.innerHTML = '';
+
+            if (!selectedId) {
+                emptyEl.style.display = 'block';
+                totalEl.textContent = '0';
+                doneEl.textContent = '0';
+                leftEl.textContent = '0';
+                return;
+            }
+
+            const note = notes.find(n => n.id === selectedId);
+            if (!note) {
+                emptyEl.style.display = 'block';
+                totalEl.textContent = '0';
+                doneEl.textContent = '0';
+                leftEl.textContent = '0';
+                return;
+            }
+
+            const total = Math.max(1, parseInt(note.limit) || 1);
+            const current = Math.max(0, Math.min(note.current, total));
+
+            emptyEl.style.display = 'none';
+
+            totalEl.textContent = total;
+            doneEl.textContent = current;
+            leftEl.textContent = Math.max(0, total - current);
+
+            for (let i = 0; i < total; i++) {
+                const bead = document.createElement('div');
+                bead.className = 'bead';
+
+                if (i < current) bead.classList.add('active');
+
+                // current bead highlight
+                if (current > 0 && i === current - 1) {
+                    bead.classList.add('current');
+                }
+
+                beadsWrap.appendChild(bead);
+
+                if (i < total - 1) {
+                    const connector = document.createElement('div');
+                    connector.className = 'bead connector';
+                    beadsWrap.appendChild(connector);
+                }
+            }
+
+            requestAnimationFrame(() => {
+                scrollTasbihToCurrent();
+            });
+        }
+
+        function scrollTasbihToCurrent() {
+            const track = document.getElementById('tasbihTrack');
+            const beadsWrap = document.getElementById('tasbihBeads');
+
+            if (!track || !beadsWrap || !selectedId) return;
+
+            const note = notes.find(n => n.id === selectedId);
+            if (!note) return;
+
+            const beadEls = beadsWrap.querySelectorAll('.bead:not(.connector)');
+            if (!beadEls.length) return;
+
+            let currentIndex = Math.max(0, Math.min(note.current - 1, beadEls.length - 1));
+            if (note.current <= 0) currentIndex = 0;
+
+            const currentBead = beadEls[currentIndex];
+            if (!currentBead) return;
+
+            const trackWidth = track.clientWidth;
+            const beadCenter = currentBead.offsetLeft + currentBead.offsetWidth / 2;
+            let translateX = trackWidth / 2 - beadCenter;
+
+            const maxTranslate = 0;
+            const minTranslate = trackWidth - beadsWrap.scrollWidth - 16;
+
+            if (translateX > maxTranslate) translateX = maxTranslate;
+            if (translateX < minTranslate) translateX = minTranslate;
+
+            beadsWrap.style.transform = `translateX(${translateX}px)`;
         }
 
         function changeCounter(delta) {
@@ -1014,17 +1286,27 @@
                 showAlert(`✅ "${note.text.substring(0, 30)}" ইতিমধ্যে সম্পন্ন! রিসেট করুন`);
                 return false;
             }
+
             let newVal = note.current + delta;
             if (newVal < 0) newVal = 0;
+
             if (newVal > note.limit) {
                 if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`);
                 return false;
             }
+
             note.current = newVal;
+
+            if (delta > 0) {
+                animateTapButton();
+                vibrateNow(35);
+            }
+
             updateCompletion(note);
             saveData();
             renderNotesList();
             updateCounterAndCard();
+            renderTasbihVisual();
             return true;
         }
 
@@ -1044,6 +1326,7 @@
                     saveData();
                     renderNotesList();
                     updateCounterAndCard();
+                    renderTasbihVisual();
                     showAlert(`🔄 "${note.text.substring(0, 30)}" রিসেট`);
                     playSound('reset.mp3');
                 });
@@ -1059,6 +1342,7 @@
                 saveData();
                 renderNotesList();
                 updateCounterAndCard();
+                renderTasbihVisual();
                 showAlert("🔄 সব নোট রিসেট সম্পন্ন!");
                 playSound('reset.mp3');
             });
@@ -1070,6 +1354,7 @@
                 localStorage.setItem(STORAGE_SELECTED, selectedId);
                 renderNotesList();
                 updateCounterAndCard();
+                renderTasbihVisual();
             }
         }
 
@@ -1113,7 +1398,6 @@
 
         function updateSelectedCard() { updateCounterAndCard(); }
 
-        // ------------------- main rendering: up/down/del সবসময় কাজ করবে (completed হলেও) -------------------
         function renderNotesList() {
             const container = document.getElementById('notesList');
             if (!container) return;
@@ -1157,7 +1441,6 @@
                     </div>
                 `;
 
-                // text edit (completed হলে disabled)
                 const textDiv = div.querySelector('.note-text');
                 if (!note.completed) {
                     textDiv.addEventListener('blur', (e) => {
@@ -1179,11 +1462,15 @@
                         let newLimit = parseInt(e.target.value);
                         if (isNaN(newLimit) || newLimit < 1) newLimit = 1;
                         note.limit = newLimit;
+
+                        if (note.current > note.limit) note.current = note.limit;
                         if (note.current < note.limit && note.completed) note.completed = false;
                         if (note.current >= note.limit) note.completed = true;
+
                         saveData();
                         renderNotesList();
                         updateSelectedCard();
+                        renderTasbihVisual();
                     });
                 }
 
@@ -1202,15 +1489,12 @@
                     });
                 }
 
-                // ---- UP / DOWN / DELETE (এখন সম্পন্ন আইটেমেও কাজ করবে) ----
                 const upBtn = div.querySelector('.up');
                 upBtn.addEventListener('click', () => {
                     if (idx > 0) {
                         [notes[idx - 1], notes[idx]] = [notes[idx], notes[idx - 1]];
                         saveData();
                         renderNotesList();
-                        if (selectedId === note.id) selectedId = notes[idx - 1]?.id;
-                        else if (selectedId === notes[idx]?.id) selectedId = notes[idx]?.id;
                         updateSelectedCard();
                     }
                 });
@@ -1221,8 +1505,6 @@
                         [notes[idx], notes[idx + 1]] = [notes[idx + 1], notes[idx]];
                         saveData();
                         renderNotesList();
-                        if (selectedId === note.id) selectedId = notes[idx + 1]?.id;
-                        else if (selectedId === notes[idx]?.id) selectedId = notes[idx]?.id;
                         updateSelectedCard();
                     }
                 });
@@ -1239,6 +1521,7 @@
                         saveData();
                         renderNotesList();
                         updateSelectedCard();
+                        renderTasbihVisual();
                     });
                 });
 
@@ -1305,6 +1588,7 @@
         function refreshUI() {
             renderNotesList();
             updateCounterAndCard();
+            renderTasbihVisual();
         }
 
         function startTimer() {
@@ -1314,9 +1598,11 @@
                 renderNotesList();
                 updateCounterAndCard();
             }, 60000);
+
             checkTimeAlerts();
             renderNotesList();
             updateCounterAndCard();
+            renderTasbihVisual();
         }
 
         function attachEvents() {
@@ -1326,12 +1612,17 @@
             document.getElementById('resetSelectedBtn').addEventListener('click', resetSelected);
             document.getElementById('resetAllBtn').addEventListener('click', resetAll);
             document.getElementById('addNoteBtn').addEventListener('click', addNewNote);
+
+            window.addEventListener('resize', () => {
+                scrollTasbihToCurrent();
+            });
         }
 
         loadData();
         attachEvents();
         renderNotesList();
         updateCounterAndCard();
+        renderTasbihVisual();
         startTimer();
     </script>
 </body>
