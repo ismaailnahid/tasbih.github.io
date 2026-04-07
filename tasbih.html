@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>তাসবিহ প্রো | এলিট টাইমসেট কাউন্টার</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a281e;
+            border-radius: 12px;
+            margin-block: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c9aa6b;
+            border-radius: 12px;
+            transition: background 0.2s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e2bc6c;
+        }
+
+        :root {
+            --radius-xs: clamp(8px, 2.5vw, 12px);
+            --radius-sm: clamp(12px, 3.5vw, 18px);
+            --radius-md: clamp(18px, 5vw, 28px);
+            --radius-lg: clamp(24px, 6vw, 40px);
+            --radius-xl: clamp(32px, 8vw, 56px);
+            --spacing-xxs: clamp(4px, 1.5vw, 6px);
+            --spacing-xs: clamp(6px, 2vw, 10px);
+            --spacing-sm: clamp(10px, 3vw, 14px);
+            --spacing-md: clamp(14px, 4vw, 20px);
+            --spacing-lg: clamp(20px, 5vw, 28px);
+            --font-xxs: clamp(10px, 2.5vw, 11px);
+            --font-xs: clamp(11px, 3vw, 13px);
+            --font-sm: clamp(13px, 3.5vw, 15px);
+            --font-md: clamp(16px, 4.2vw, 19px);
+            --font-lg: clamp(20px, 5.5vw, 26px);
+            --font-xl: clamp(28px, 7vw, 38px);
+            --font-xxl: clamp(36px, 10vw, 62px);
+        }
+
+        body {
+            background: radial-gradient(ellipse at 20% 30%, #0a1f0e, #030a04);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Noto Naskh Arabic', 'Noto Serif Bengali', 'Inter', 'Segoe UI', system-ui, sans-serif;
+            padding: var(--spacing-md);
+        }
+
+        .tasbih-pro {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(18, 16, 11, 0.6);
+            backdrop-filter: blur(16px);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 220, 150, 0.2);
+            padding: var(--spacing-lg);
+        }
+
+        .badge-header {
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #2a281c, #1f1d12);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 20px;
+            border-radius: 100px;
+            font-size: var(--font-xxs);
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: #f5d78c;
+            border: 1px solid rgba(230, 195, 100, 0.4);
+        }
+
+        .notes-card {
+            background: rgba(30, 28, 22, 0.7);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            border: 1px solid rgba(220, 185, 90, 0.4);
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-xs);
+            border-bottom: 2px solid rgba(220, 185, 80, 0.3);
+        }
+
+        .notes-title {
+            font-size: var(--font-md);
+            font-weight: 700;
+            background: linear-gradient(135deg, #f9e5b3, #e2bc6c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-add {
+            background: linear-gradient(145deg, #3f8a41, #235f25);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-weight: 600;
+            color: white;
+            font-size: var(--font-xxs);
+            cursor: pointer;
+            box-shadow: 0 5px 0 #103a12;
+            transition: 0.05s linear;
+        }
+
+        .btn-add:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #103a12;
+        }
+
+        .notes-list {
+            max-height: 420px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 3px;
+        }
+
+        .note-item {
+            background: linear-gradient(115deg, #fffaf0, #fff6e8);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s;
+        }
+
+        .note-item.completed {
+            background: linear-gradient(115deg, #c8e6b0, #b0dc8a);
+            border-left: 4px solid #2e8b2e;
+            opacity: 0.85;
+        }
+
+        .note-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .serial-badge {
+            background: radial-gradient(circle at 30% 25%, #c7a45c, #a07d42);
+            width: clamp(38px, 8vw, 48px);
+            height: clamp(38px, 8vw, 48px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            font-size: clamp(1rem, 4vw, 1.3rem);
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 4px 0 #614d28;
+            flex-shrink: 0;
+        }
+
+        .note-middle {
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .note-text {
+            background: rgba(255, 250, 235, 0.95);
+            border: 1px solid #e7cf99;
+            padding: 7px 12px;
+            border-radius: 50px;
+            font-size: var(--font-sm);
+            outline: none;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .note-item.completed .note-text {
+            text-decoration: line-through;
+            opacity: 0.7;
+            pointer-events: none;
+            background: #e0d5bd;
+        }
+
+        .limit-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            background: #f1e7d3;
+            padding: 5px 12px;
+            border-radius: 50px;
+        }
+
+        .limit-label {
+            font-size: var(--font-xxs);
+            font-weight: 600;
+            color: #866e3c;
+        }
+
+        .limit-input {
+            width: 60px;
+            background: white;
+            border: none;
+            border-radius: 40px;
+            padding: 5px 6px;
+            font-weight: bold;
+            text-align: center;
+            font-size: var(--font-xxs);
+        }
+
+        .note-item.completed .limit-input {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .progress-chip {
+            background: #2f3a1f;
+            color: #ffecb3;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: var(--font-xxs);
+        }
+
+        .btn-select {
+            background: #8f6b3c;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #543f1f;
+            font-size: var(--font-xxs);
+            transition: 0.05s linear;
+            align-self: flex-start;
+        }
+
+        .btn-select.active {
+            background: #2a7a2c;
+            box-shadow: 0 0 8px #7ef55e;
+        }
+
+        .btn-select:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #543f1f;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .action-icon {
+            background: #e2d2b0;
+            border: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #b39562;
+            transition: 0.05s linear;
+        }
+
+        .action-icon:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #b39562;
+        }
+
+        .note-item.completed .action-icon {
+            opacity: 1;
+            pointer-events: auto;
+            background: #d4c29b;
+            box-shadow: 0 3px 0 #a07d42;
+        }
+
+        .time-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #e9dfc7;
+            padding: 6px 14px;
+            border-radius: 60px;
+            margin-top: 2px;
+        }
+
+        .time-icon {
+            font-size: 0.85rem;
+        }
+
+        .time-label-sm {
+            font-size: var(--font-xxs);
+            font-weight: 600;
+            color: #6b4c2c;
+        }
+
+        .time-picker {
+            background: white;
+            border: 1px solid #d4b87a;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: var(--font-xxs);
+            font-family: monospace;
+            font-weight: bold;
+            color: #3a2a1a;
+        }
+
+        .note-item.completed .time-picker {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .time-status-badge {
+            font-size: var(--font-xxs);
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 50px;
+            background: #2f2a1c;
+            color: #ffeaac;
+        }
+
+        .time-status-badge.alert {
+            background: #b64516;
+            animation: softPulse 1s infinite;
+        }
+
+        .time-status-badge.passed {
+            background: #8b4513;
+        }
+
+        @keyframes softPulse {
+            0% {
+                opacity: 0.8;
+                transform: scale(0.98);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .selected-card {
+            background: linear-gradient(135deg, #262215, #1c1a0f);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            border: 1px solid rgba(243, 207, 132, 0.5);
+            text-align: center;
+        }
+
+        .selected-name {
+            font-size: var(--font-md);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff2cf, #f7dc9c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            word-break: break-word;
+        }
+
+        .stats-group {
+            display: flex;
+            justify-content: center;
+            gap: clamp(12px, 4vw, 20px);
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .stat-item {
+            background: #2d2a1c;
+            border-radius: 100px;
+            padding: 5px 16px;
+            display: flex;
+            gap: 8px;
+            font-size: var(--font-xs);
+            color: #ffeaac;
+        }
+
+        .completed-badge {
+            background: #2e8b2e;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: var(--font-xxs);
+            margin-left: 10px;
+        }
+
+        /* =========================
+           TASBIH VISUAL TRACK
+        ========================= */
+        .tasbih-visual-wrap {
+            margin: 10px 0 20px;
+            padding: 18px 16px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, rgba(30, 26, 15, 0.95), rgba(17, 14, 8, 0.92));
+            border: 1px solid rgba(243, 207, 132, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 231, 170, 0.08), 0 12px 30px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+        }
+
+        .tasbih-track {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .tasbih-beads {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            will-change: transform;
+            transition: transform 0.38s cubic-bezier(.22, 1, .36, 1);
+            padding-inline: 8px;
+        }
+
+        .bead {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+            background:
+                radial-gradient(circle at 30% 28%, #fff1c6 0%, #e8c978 18%, #b78b41 55%, #7b5a24 100%);
+            box-shadow:
+                inset -3px -4px 6px rgba(0, 0, 0, 0.28),
+                inset 2px 2px 5px rgba(255, 244, 208, 0.55),
+                0 5px 10px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 228, 160, 0.22);
+            transform: scale(0.92);
+            opacity: 0.35;
+            transition: transform 0.28s ease, opacity 0.28s ease, box-shadow 0.28s ease, filter 0.28s ease;
+        }
+
+        .bead::after {
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border-radius: 50%;
+            border: 1px dashed rgba(85, 55, 16, 0.28);
+        }
+
+        .bead.active {
+            opacity: 1;
+            transform: scale(1);
+            filter: saturate(1.08);
+        }
+
+        .bead.current {
+            transform: scale(1.16);
+            box-shadow:
+                inset -3px -4px 6px rgba(0, 0, 0, 0.28),
+                inset 2px 2px 5px rgba(255, 244, 208, 0.55),
+                0 0 0 4px rgba(255, 220, 120, 0.15),
+                0 0 18px rgba(255, 214, 110, 0.45),
+                0 8px 18px rgba(0, 0, 0, 0.42);
+        }
+
+        .bead.connector {
+            width: 16px;
+            height: 4px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #5e4319, #d7b36b, #5e4319);
+            box-shadow: inset 0 1px 1px rgba(255, 241, 201, 0.35);
+            opacity: 0.55;
+            border: none;
+        }
+
+        .tasbih-meta {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tasbih-meta-chip {
+            background: rgba(255, 236, 179, 0.08);
+            color: #ffecb3;
+            border: 1px solid rgba(255, 236, 179, 0.12);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: var(--font-xxs);
+            font-weight: 600;
+        }
+
+        .tasbih-empty {
+            width: 100%;
+            text-align: center;
+            color: #d8bf7f;
+            font-size: var(--font-sm);
+            opacity: 0.85;
+            padding: 18px 0;
+        }
+
+        .counter-area {
+            text-align: center;
+            margin: var(--spacing-sm) 0;
+        }
+
+        .counter-flex {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(15px, 5vw, 30px);
+            flex-wrap: wrap;
+        }
+
+        .counter-btn {
+            background: radial-gradient(circle at 30% 30%, #5a4a2a, #3a2e18);
+            border: none;
+            width: clamp(55px, 12vw, 75px);
+            height: clamp(55px, 12vw, 75px);
+            border-radius: 80px;
+            font-size: clamp(1.8rem, 7vw, 3.2rem);
+            font-weight: 900;
+            color: #ffefbf;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #2a2210;
+            transition: 0.05s linear;
+        }
+
+        .counter-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 3px 0 #2a2210;
+        }
+
+        .counter-number {
+            font-size: var(--font-xxl);
+            font-weight: 900;
+            background: linear-gradient(145deg, #1e1b10, #0f0d07);
+            padding: 5px clamp(20px, 5vw, 40px);
+            border-radius: 100px;
+            box-shadow: inset 0 -2px 0 #5e552e, 0 15px 30px rgba(0, 0, 0, 0.4);
+            color: #fff0c4;
+            font-family: monospace;
+            letter-spacing: clamp(3px, 2vw, 8px);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .main-tap {
+            background: radial-gradient(circle at 30% 20%, #4ba84f, #1a621e);
+            width: 100%;
+            border: none;
+            padding: 16px 16px;
+            border-radius: 100px;
+            font-size: clamp(1.3rem, 5vw, 1.9rem);
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            margin: var(--spacing-md) 0;
+            box-shadow: 0 10px 0 #0a380c;
+            transition: 0.07s linear;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .main-tap:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #0a380c;
+        }
+
+        .main-tap.disabled {
+            opacity: 0.5;
+            transform: none;
+            pointer-events: none;
+        }
+
+        .main-tap.tap-pop {
+            animation: tapPulse 0.22s ease;
+        }
+
+        @keyframes tapPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(0.97);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .action-group {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .reset-btn {
+            background: #8f6534;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #563d1a;
+            font-size: var(--font-xs);
+        }
+
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #563d1a;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+            font-size: var(--font-xxs);
+            color: #b8a064;
+            border-top: 1px solid rgba(200, 170, 90, 0.3);
+            padding-top: var(--spacing-md);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-container {
+            background: linear-gradient(145deg, #2a281e, #1f1d12);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            max-width: 320px;
+            width: 85%;
+            text-align: center;
+            border: 1px solid rgba(230, 195, 100, 0.5);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.2s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-title {
+            font-size: var(--font-lg);
+            font-weight: 700;
+            color: #f5d78c;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .modal-message {
+            font-size: var(--font-sm);
+            color: #e2d2b0;
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: var(--font-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.05s linear;
+        }
+
+        .modal-btn.confirm {
+            background: #b64516;
+            color: white;
+            box-shadow: 0 3px 0 #6e2a0a;
+        }
+
+        .modal-btn.confirm:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #6e2a0a;
+        }
+
+        .modal-btn.cancel {
+            background: #4a3a28;
+            color: #ffeaac;
+            box-shadow: 0 3px 0 #2a1e12;
+        }
+
+        .modal-btn.cancel:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #2a1e12;
+        }
+
+        @media (max-width: 550px) {
+            .tasbih-pro {
+                padding: var(--spacing-md);
+            }
+
+            .note-item {
+                padding: 12px;
+            }
+
+            .note-row {
+                display: grid;
+                grid-template-columns: auto auto;
+                grid-template-areas: "serial actions" "middle middle";
+                align-items: start;
+                gap: 10px 10px;
+            }
+
+            .serial-badge {
+                grid-area: serial;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .note-actions {
+                grid-area: actions;
+                display: flex;
+                justify-content: flex-end;
+                gap: 6px;
+            }
+
+            .action-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+
+            .note-middle {
+                grid-area: middle;
+                width: 100%;
+            }
+
+            .note-text {
+                width: 100%;
+                border-radius: 18px;
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .limit-bar {
+                width: 100%;
+                justify-content: flex-start;
+                border-radius: 18px;
+                padding: 8px 10px;
+            }
+
+            .limit-input {
+                width: 55px;
+            }
+
+            .btn-select {
+                min-width: 95px;
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+
+            .time-row {
+                width: 100%;
+                border-radius: 18px;
+                padding: 8px 10px;
+            }
+
+            .time-picker {
+                min-width: 105px;
+            }
+
+            .counter-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.8rem;
+            }
+
+            .counter-number {
+                min-width: 100px;
+                letter-spacing: 3px;
+            }
+
+            .stat-item {
+                padding: 4px 12px;
+                font-size: 11px;
+            }
+
+            .bead {
+                width: 30px;
+                height: 30px;
+            }
+
+            .bead.connector {
+                width: 12px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .serial-badge {
+                width: 38px;
+                height: 38px;
+                font-size: 0.95rem;
+            }
+
+            .action-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .btn-select {
+                min-width: 90px;
+                font-size: 10.5px;
+            }
+
+            .time-picker {
+                min-width: 100px;
+            }
+
+            .bead {
+                width: 28px;
+                height: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tasbih-pro">
+        <div class="badge-header"><span class="badge">✦ তাসবিহ প্রো | টাইমসেট ✦</span></div>
+
+        <div class="notes-card">
+            <div class="notes-header">
+                <div class="notes-title"><span>📿</span> জিকির নোটস + সময় নির্ধারণ</div>
+                <button id="addNoteBtn" class="btn-add">+ নতুন নোট</button>
+            </div>
+            <div id="notesList" class="notes-list"></div>
+        </div>
+
+        <div class="selected-card">
+            <div class="selected-name" id="selectedName">কোনো নোট সিলেক্ট নেই</div>
+            <div class="stats-group">
+                <div class="stat-item">🎯 লিমিট: <span id="selectedLimit">—</span></div>
+                <div class="stat-item">📊 অগ্রগতি: <span id="selectedProgress">0</span></div>
+                <div class="stat-item">⏰ সময়: <span id="selectedTimeStatus">—</span></div>
+            </div>
+        </div>
+
+        <!-- ===== Dynamic Tasbih Visual ===== -->
+        <div class="tasbih-visual-wrap">
+            <div class="tasbih-track" id="tasbihTrack">
+                <div class="tasbih-empty" id="tasbihEmpty">📿 নোট সিলেক্ট করলে তাসবিহর দানা দেখা যাবে</div>
+                <div class="tasbih-beads" id="tasbihBeads"></div>
+            </div>
+            <div class="tasbih-meta">
+                <div class="tasbih-meta-chip">📿 দানা: <span id="beadTotal">0</span></div>
+                <div class="tasbih-meta-chip">✨ সম্পন্ন: <span id="beadDone">0</span></div>
+                <div class="tasbih-meta-chip">🎯 বাকি: <span id="beadLeft">0</span></div>
+            </div>
+        </div>
+
+        <div class="counter-area">
+            <div class="counter-flex">
+                <button id="decrementBtn" class="counter-btn">−</button>
+                <span id="counterDisplay" class="counter-number">0</span>
+                <button id="incrementBtn" class="counter-btn">+</button>
+            </div>
+        </div>
+
+        <button id="tapButton" class="main-tap">🕋 ট্যাপ 🕌</button>
+
+        <div class="action-group">
+            <button id="resetSelectedBtn" class="reset-btn">⟳ রিসেট সিলেক্টেড</button>
+            <button id="resetAllBtn" class="reset-btn" style="background:#6f4e2e;">🔄 রিসেট সব</button>
+        </div>
+        <div class="footer">⏰ প্রতিটি নোটের জন্য সময় নির্ধারণ করুন | Tap করলে যত limit থাকবে ঠিক তত bead দেখাবে</div>
+    </div>
+
+    <script>
+        // ---------- App State ----------
+        let notes = [];
+        let nextId = 1;
+        let selectedId = null;
+        let timerInterval = null;
+
+        const STORAGE_NOTES = 'tasbih_time_organized_v7_dynamic_beads';
+        const STORAGE_SELECTED = 'tasbih_time_selected_v7_dynamic_beads';
+
+        // ---------- Audio Playback Function ----------
+        function playSound(soundFileName) {
+            try {
+                const audio = new Audio(soundFileName);
+                audio.play().catch(e => console.warn("Audio play failed:", e));
+            } catch (e) {
+                console.warn("Audio error:", e);
+            }
+        }
+
+        // ---------- Modal Function ----------
+        function showConfirmModal(title, message, onConfirm) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-container';
+
+            modal.innerHTML = `
+                <div class="modal-icon">🗑️</div>
+                <div class="modal-title">${title}</div>
+                <div class="modal-message">${message}</div>
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel">বাতিল</button>
+                    <button class="modal-btn confirm">মুছুন</button>
+                </div>
+            `;
+
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+
+            const cancelBtn = modal.querySelector('.cancel');
+            const confirmBtn = modal.querySelector('.confirm');
+
+            cancelBtn.addEventListener('click', () => {
+                overlay.remove();
+            });
+
+            confirmBtn.addEventListener('click', () => {
+                overlay.remove();
+                onConfirm();
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
+        }
+
+        // ---------- Helper Functions ----------
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getTimeDifferenceText(reminderTime) {
+            if (!reminderTime || reminderTime === "") return null;
+            const now = new Date();
+            const [reminderHour, reminderMinute] = reminderTime.split(':').map(Number);
+            let reminderDate = new Date();
+            reminderDate.setHours(reminderHour, reminderMinute, 0, 0);
+            let diffMs = reminderDate - now;
+            let diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+            if (diffMinutes < 0) {
+                let passedMinutes = Math.abs(diffMinutes);
+                if (passedMinutes === 0) return `🔔 পড়ার সময়!`;
+                if (passedMinutes < 60) {
+                    if (passedMinutes === 1) return `অতিবাহিত: ১ মিনিট`;
+                    return `অতিবাহিত: ${passedMinutes} মিনিট`;
+                }
+                let passedHours = Math.floor(passedMinutes / 60);
+                let remainingMins = passedMinutes % 60;
+                if (remainingMins === 0) {
+                    if (passedHours === 1) return `অতিবাহিত: ১ ঘণ্টা`;
+                    return `অতিবাহিত: ${passedHours} ঘণ্টা`;
+                }
+                if (passedHours === 1) return `অতিবাহিত: ১ ঘণ্টা ${remainingMins} মিনিট`;
+                return `অতিবাহিত: ${passedHours} ঘণ্টা ${remainingMins} মিনিট`;
+            }
+            else if (diffMinutes === 0) {
+                return `🔔 পড়ার সময়!`;
+            }
+            else if (diffMinutes < 60) {
+                if (diffMinutes === 1) return `বাকি: ১ মিনিট`;
+                return `বাকি: ${diffMinutes} মিনিট`;
+            }
+            else {
+                let diffHours = Math.floor(diffMinutes / 60);
+                let remainingMins = diffMinutes % 60;
+                if (remainingMins === 0) {
+                    if (diffHours === 1) return `বাকি: ১ ঘণ্টা`;
+                    return `বাকি: ${diffHours} ঘণ্টা`;
+                }
+                if (diffHours === 1) return `বাকি: ১ ঘণ্টা ${remainingMins} মিনিট`;
+                return `বাকি: ${diffHours} ঘণ্টা ${remainingMins} মিনিট`;
+            }
+        }
+
+        function playBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 880;
+                gain.gain.value = 0.2;
+                osc.type = "sine";
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.6);
+                osc.stop(audioCtx.currentTime + 0.5);
+            } catch (e) { }
+        }
+
+        function vibrateNow(ms = 120) {
+            if ("vibrate" in navigator) {
+                navigator.vibrate(ms);
+            }
+        }
+
+        function showAlert(msg, isTimeAlert = false) {
+            const div = document.createElement('div');
+            div.textContent = msg;
+            div.style.position = 'fixed';
+            div.style.top = '50%';
+            div.style.left = '50%';
+            div.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            div.style.backgroundColor = isTimeAlert ? '#9b2e16' : '#1e1b12';
+            div.style.color = '#ffefbf';
+            div.style.padding = 'clamp(14px, 4vw, 22px) clamp(20px, 7vw, 40px)';
+            div.style.borderRadius = '70px';
+            div.style.fontSize = 'clamp(0.9rem, 4vw, 1.3rem)';
+            div.style.fontWeight = 'bold';
+            div.style.textAlign = 'center';
+            div.style.boxShadow = '0 25px 45px rgba(0,0,0,0.6), 0 0 0 3px #f3cf7a';
+            div.style.backdropFilter = 'blur(20px)';
+            div.style.zIndex = '10000';
+            div.style.border = '1px solid #efcd85';
+            div.style.transition = 'all .25s ease';
+            document.body.appendChild(div);
+            setTimeout(() => { div.style.transform = 'translate(-50%, -50%) scale(1)'; }, 10);
+            playBeep();
+            setTimeout(() => {
+                div.style.opacity = '0';
+                setTimeout(() => div.remove(), 400);
+            }, 2200);
+        }
+
+        function checkTimeAlerts() {
+            const now = new Date();
+            const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            let hasChanges = false;
+            notes.forEach(note => {
+                if (note.reminderTime && note.reminderTime !== "" && !note.completed) {
+                    if (note.reminderTime === currentTime) {
+                        if (!note.lastAlertSent || note.lastAlertSent !== currentTime) {
+                            note.lastAlertSent = currentTime;
+                            hasChanges = true;
+                            showAlert(`⏰ "${note.text.substring(0, 35)}" পড়ার সময়!`, true);
+                        }
+                    } else {
+                        if (note.lastAlertSent === currentTime) {
+                            note.lastAlertSent = null;
+                            hasChanges = true;
+                        }
+                    }
+                }
+            });
+            if (hasChanges) {
+                saveData();
+                renderNotesList();
+                updateSelectedCard();
+            }
+        }
+
+        function updateCompletion(note) {
+            if (note.current >= note.limit) {
+                if (!note.completed) {
+                    note.completed = true;
+                    showAlert(`✨ "${note.text.substring(0, 35)}" সম্পন্ন হয়েছে! ✨`);
+                    playSound('thamun.mp3');
+                    vibrateNow([120, 50, 120]);
+                    return true;
+                }
+            } else {
+                if (note.completed) {
+                    note.completed = false;
+                }
+            }
+            return false;
+        }
+
+        // =========================
+        // TAP ANIMATION
+        // =========================
+        function animateTapButton() {
+            const tapBtn = document.getElementById('tapButton');
+            if (!tapBtn) return;
+            tapBtn.classList.remove('tap-pop');
+            void tapBtn.offsetWidth;
+            tapBtn.classList.add('tap-pop');
+        }
+
+        // =========================
+        // DYNAMIC TASBIH RENDER
+        // যত limit তত bead
+        // =========================
+        function renderTasbihVisual() {
+            const beadsWrap = document.getElementById('tasbihBeads');
+            const emptyEl = document.getElementById('tasbihEmpty');
+            const totalEl = document.getElementById('beadTotal');
+            const doneEl = document.getElementById('beadDone');
+            const leftEl = document.getElementById('beadLeft');
+
+            if (!beadsWrap) return;
+
+            beadsWrap.innerHTML = '';
+
+            if (!selectedId) {
+                emptyEl.style.display = 'block';
+                totalEl.textContent = '0';
+                doneEl.textContent = '0';
+                leftEl.textContent = '0';
+                return;
+            }
+
+            const note = notes.find(n => n.id === selectedId);
+            if (!note) {
+                emptyEl.style.display = 'block';
+                totalEl.textContent = '0';
+                doneEl.textContent = '0';
+                leftEl.textContent = '0';
+                return;
+            }
+
+            const total = Math.max(1, parseInt(note.limit) || 1);
+            const current = Math.max(0, Math.min(note.current, total));
+
+            emptyEl.style.display = 'none';
+
+            totalEl.textContent = total;
+            doneEl.textContent = current;
+            leftEl.textContent = Math.max(0, total - current);
+
+            for (let i = 0; i < total; i++) {
+                const bead = document.createElement('div');
+                bead.className = 'bead';
+
+                if (i < current) bead.classList.add('active');
+
+                // current bead highlight
+                if (current > 0 && i === current - 1) {
+                    bead.classList.add('current');
+                }
+
+                beadsWrap.appendChild(bead);
+
+                if (i < total - 1) {
+                    const connector = document.createElement('div');
+                    connector.className = 'bead connector';
+                    beadsWrap.appendChild(connector);
+                }
+            }
+
+            requestAnimationFrame(() => {
+                scrollTasbihToCurrent();
+            });
+        }
+
+        function scrollTasbihToCurrent() {
+            const track = document.getElementById('tasbihTrack');
+            const beadsWrap = document.getElementById('tasbihBeads');
+
+            if (!track || !beadsWrap || !selectedId) return;
+
+            const note = notes.find(n => n.id === selectedId);
+            if (!note) return;
+
+            const beadEls = beadsWrap.querySelectorAll('.bead:not(.connector)');
+            if (!beadEls.length) return;
+
+            let currentIndex = Math.max(0, Math.min(note.current - 1, beadEls.length - 1));
+            if (note.current <= 0) currentIndex = 0;
+
+            const currentBead = beadEls[currentIndex];
+            if (!currentBead) return;
+
+            const trackWidth = track.clientWidth;
+            const beadCenter = currentBead.offsetLeft + currentBead.offsetWidth / 2;
+            let translateX = trackWidth / 2 - beadCenter;
+
+            const maxTranslate = 0;
+            const minTranslate = trackWidth - beadsWrap.scrollWidth - 16;
+
+            if (translateX > maxTranslate) translateX = maxTranslate;
+            if (translateX < minTranslate) translateX = minTranslate;
+
+            beadsWrap.style.transform = `translateX(${translateX}px)`;
+        }
+
+        function changeCounter(delta) {
+            if (!selectedId) {
+                showAlert("⚠️ একটি নোট সিলেক্ট করুন");
+                return false;
+            }
+            const note = notes.find(n => n.id === selectedId);
+            if (!note) {
+                selectedId = null;
+                refreshUI();
+                return false;
+            }
+            if (note.completed && delta > 0) {
+                showAlert(`✅ "${note.text.substring(0, 30)}" ইতিমধ্যে সম্পন্ন! রিসেট করুন`);
+                return false;
+            }
+
+            let newVal = note.current + delta;
+            if (newVal < 0) newVal = 0;
+
+            if (newVal > note.limit) {
+                if (delta > 0) showAlert(`সীমা অতিক্রম! সর্বোচ্চ ${note.limit}`);
+                return false;
+            }
+
+            note.current = newVal;
+
+            if (delta > 0) {
+                animateTapButton();
+                vibrateNow(35);
+            }
+
+            updateCompletion(note);
+            saveData();
+            renderNotesList();
+            updateCounterAndCard();
+            renderTasbihVisual();
+            return true;
+        }
+
+        function increment() { changeCounter(1); }
+        function decrement() { changeCounter(-1); }
+
+        function resetSelected() {
+            if (!selectedId) {
+                showAlert("কোন নোট সিলেক্ট নেই");
+                return;
+            }
+            const note = notes.find(n => n.id === selectedId);
+            if (note) {
+                showConfirmModal('রিসেট নিশ্চিত করুন', `"${note.text.substring(0, 35)}" রিসেট করবেন?`, () => {
+                    note.current = 0;
+                    note.completed = false;
+                    saveData();
+                    renderNotesList();
+                    updateCounterAndCard();
+                    renderTasbihVisual();
+                    showAlert(`🔄 "${note.text.substring(0, 30)}" রিসেট`);
+                    playSound('reset.mp3');
+                });
+            }
+        }
+
+        function resetAll() {
+            showConfirmModal('সব নোট রিসেট', 'সব নোটের কাউন্টার ০ করে দিবেন?', () => {
+                notes.forEach(n => {
+                    n.current = 0;
+                    n.completed = false;
+                });
+                saveData();
+                renderNotesList();
+                updateCounterAndCard();
+                renderTasbihVisual();
+                showAlert("🔄 সব নোট রিসেট সম্পন্ন!");
+                playSound('reset.mp3');
+            });
+        }
+
+        function selectNote(id) {
+            if (notes.some(n => n.id === id)) {
+                selectedId = id;
+                localStorage.setItem(STORAGE_SELECTED, selectedId);
+                renderNotesList();
+                updateCounterAndCard();
+                renderTasbihVisual();
+            }
+        }
+
+        function updateCounterAndCard() {
+            const counterSpan = document.getElementById('counterDisplay');
+            const nameSpan = document.getElementById('selectedName');
+            const limitSpan = document.getElementById('selectedLimit');
+            const progressSpan = document.getElementById('selectedProgress');
+            const timeStatusSpan = document.getElementById('selectedTimeStatus');
+            const tapBtn = document.getElementById('tapButton');
+
+            if (selectedId) {
+                const note = notes.find(n => n.id === selectedId);
+                if (note) {
+                    counterSpan.innerText = note.current;
+                    nameSpan.innerHTML = `📿 ${escapeHtml(note.text)} ${note.completed ? '<span class="completed-badge">✅ সম্পন্ন</span>' : ''}`;
+                    limitSpan.innerText = note.limit;
+                    progressSpan.innerText = `${note.current}/${note.limit}`;
+                    if (note.completed) tapBtn?.classList.add('disabled');
+                    else tapBtn?.classList.remove('disabled');
+                    if (note.reminderTime && note.reminderTime !== "") {
+                        const timeDiffText = getTimeDifferenceText(note.reminderTime);
+                        timeStatusSpan.innerHTML = `⏰ ${timeDiffText || note.reminderTime}`;
+                        if (timeDiffText === '🔔 পড়ার সময়!' && !note.completed) timeStatusSpan.style.animation = 'softPulse 1s infinite';
+                        else timeStatusSpan.style.animation = 'none';
+                    } else {
+                        timeStatusSpan.innerHTML = `⚙️ সেট নেই`;
+                        timeStatusSpan.style.animation = 'none';
+                    }
+                    return;
+                }
+            }
+            counterSpan.innerText = "0";
+            nameSpan.innerHTML = '⚜️ কোন নোট সিলেক্ট নেই';
+            limitSpan.innerText = '—';
+            progressSpan.innerText = '0';
+            timeStatusSpan.innerHTML = '—';
+            if (timeStatusSpan) timeStatusSpan.style.animation = 'none';
+            if (tapBtn) tapBtn.classList.remove('disabled');
+        }
+
+        function updateSelectedCard() { updateCounterAndCard(); }
+
+        function renderNotesList() {
+            const container = document.getElementById('notesList');
+            if (!container) return;
+            container.innerHTML = '';
+            if (notes.length === 0) {
+                container.innerHTML = '<div class="note-item" style="padding:16px; text-align:center;">➕ নোট যোগ করুন</div>';
+                return;
+            }
+
+            notes.forEach((note, idx) => {
+                const timeDiffText = note.reminderTime ? getTimeDifferenceText(note.reminderTime) : null;
+                const isTimeMatch = timeDiffText === '🔔 পড়ার সময়!';
+                const isTimePassed = timeDiffText ? timeDiffText.startsWith('অতিবাহিত') : false;
+                const displayText = timeDiffText || (note.reminderTime || '⚙️ সেট নেই');
+
+                const div = document.createElement('div');
+                div.className = `note-item ${note.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <div class="note-row">
+                        <div class="serial-badge">${idx + 1}</div>
+                        <div class="note-middle">
+                            <div class="note-text" contenteditable="true">${escapeHtml(note.text)}</div>
+                            <div class="limit-bar">
+                                <span class="limit-label">🎯 লিমিট:</span>
+                                <input type="number" class="limit-input" value="${note.limit}" min="1" max="9999" step="1">
+                                <span class="progress-chip">📊 ${note.current}/${note.limit}</span>
+                            </div>
+                            <button class="btn-select ${selectedId === note.id ? 'active' : ''}">${selectedId === note.id ? '✓ সিলেক্টেড' : '🎯 সিলেক্ট'}</button>
+                        </div>
+                        <div class="note-actions">
+                            <button class="action-icon up">⬆️</button>
+                            <button class="action-icon down">⬇️</button>
+                            <button class="action-icon del">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="time-row">
+                        <span class="time-icon">⏰</span>
+                        <span class="time-label-sm">পড়ার সময়:</span>
+                        <input type="time" class="time-picker" value="${note.reminderTime || ''}">
+                        <span class="time-status-badge ${isTimeMatch ? 'alert' : ''} ${isTimePassed ? 'passed' : ''}">⏰ ${displayText}</span>
+                    </div>
+                `;
+
+                const textDiv = div.querySelector('.note-text');
+                if (!note.completed) {
+                    textDiv.addEventListener('blur', (e) => {
+                        let newVal = e.target.innerText.trim();
+                        if (newVal !== note.text) {
+                            note.text = newVal || "জিকির";
+                            saveData();
+                            renderNotesList();
+                            updateSelectedCard();
+                        }
+                    });
+                } else {
+                    textDiv.setAttribute('contenteditable', 'false');
+                }
+
+                const limitInp = div.querySelector('.limit-input');
+                if (!note.completed) {
+                    limitInp.addEventListener('change', (e) => {
+                        let newLimit = parseInt(e.target.value);
+                        if (isNaN(newLimit) || newLimit < 1) newLimit = 1;
+                        note.limit = newLimit;
+
+                        if (note.current > note.limit) note.current = note.limit;
+                        if (note.current < note.limit && note.completed) note.completed = false;
+                        if (note.current >= note.limit) note.completed = true;
+
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
+                        renderTasbihVisual();
+                    });
+                }
+
+                const selectBtn = div.querySelector('.btn-select');
+                selectBtn.addEventListener('click', () => selectNote(note.id));
+
+                const timePicker = div.querySelector('.time-picker');
+                if (!note.completed) {
+                    timePicker.addEventListener('change', (e) => {
+                        note.reminderTime = e.target.value;
+                        if (!note.reminderTime) note.reminderTime = "";
+                        note.lastAlertSent = null;
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
+                    });
+                }
+
+                const upBtn = div.querySelector('.up');
+                upBtn.addEventListener('click', () => {
+                    if (idx > 0) {
+                        [notes[idx - 1], notes[idx]] = [notes[idx], notes[idx - 1]];
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
+                    }
+                });
+
+                const downBtn = div.querySelector('.down');
+                downBtn.addEventListener('click', () => {
+                    if (idx < notes.length - 1) {
+                        [notes[idx], notes[idx + 1]] = [notes[idx + 1], notes[idx]];
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
+                    }
+                });
+
+                const delBtn = div.querySelector('.del');
+                delBtn.addEventListener('click', () => {
+                    showConfirmModal('নোট মুছে ফেলুন', `"${note.text.substring(0, 40)}" মুছে ফেলতে চান?`, () => {
+                        const wasSelected = (selectedId === note.id);
+                        notes = notes.filter(n => n.id !== note.id);
+                        if (wasSelected) {
+                            selectedId = notes.length ? notes[0]?.id : null;
+                        }
+                        if (notes.length && !selectedId) selectedId = notes[0]?.id;
+                        saveData();
+                        renderNotesList();
+                        updateSelectedCard();
+                        renderTasbihVisual();
+                    });
+                });
+
+                container.appendChild(div);
+            });
+            updateSelectedCard();
+        }
+
+        function addNewNote() {
+            const newNote = {
+                id: nextId++,
+                text: "নতুন জিকির",
+                limit: 33,
+                current: 0,
+                completed: false,
+                reminderTime: "",
+                lastAlertSent: null
+            };
+            notes.push(newNote);
+            saveData();
+            renderNotesList();
+            if (!selectedId) selectNote(newNote.id);
+            showAlert(`➕ নতুন নোট যোগ হয়েছে`);
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_NOTES, JSON.stringify(notes));
+            if (selectedId) localStorage.setItem(STORAGE_SELECTED, selectedId);
+        }
+
+        function loadData() {
+            const savedNotes = localStorage.getItem(STORAGE_NOTES);
+            if (savedNotes) {
+                try {
+                    let parsed = JSON.parse(savedNotes);
+                    if (Array.isArray(parsed)) {
+                        notes = parsed;
+                        notes.forEach(n => {
+                            if (n.limit === undefined) n.limit = 33;
+                            if (n.current === undefined) n.current = 0;
+                            if (n.completed === undefined) n.completed = false;
+                            if (n.reminderTime === undefined) n.reminderTime = "";
+                            if (n.current >= n.limit) n.completed = true;
+                        });
+                        if (notes.length) nextId = Math.max(...notes.map(n => n.id), 0) + 1;
+                        else nextId = 1;
+                    } else initDefault();
+                } catch (e) { initDefault(); }
+            } else { initDefault(); }
+
+            const savedSel = localStorage.getItem(STORAGE_SELECTED);
+            if (savedSel && notes.some(n => n.id == savedSel)) selectedId = parseInt(savedSel);
+            else selectedId = notes.length ? notes[0].id : null;
+        }
+
+        function initDefault() {
+            notes = [
+                { id: nextId++, text: "سُبْحَانَ اللَّهِ (সুবহানাল্লাহ)", limit: 33, current: 0, completed: false, reminderTime: "", lastAlertSent: null },
+                { id: nextId++, text: "اَلْحَمْدُ لِلَّهِ (আলহামদুলিল্লাহ)", limit: 33, current: 0, completed: false, reminderTime: "", lastAlertSent: null },
+                { id: nextId++, text: "আয়াতুল কুরসি (সকাল)", limit: 1, current: 0, completed: false, reminderTime: "06:00", lastAlertSent: null }
+            ];
+        }
+
+        function refreshUI() {
+            renderNotesList();
+            updateCounterAndCard();
+            renderTasbihVisual();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                checkTimeAlerts();
+                renderNotesList();
+                updateCounterAndCard();
+            }, 60000);
+
+            checkTimeAlerts();
+            renderNotesList();
+            updateCounterAndCard();
+            renderTasbihVisual();
+        }
+
+        function attachEvents() {
+            document.getElementById('incrementBtn').addEventListener('click', increment);
+            document.getElementById('decrementBtn').addEventListener('click', decrement);
+            document.getElementById('tapButton').addEventListener('click', increment);
+            document.getElementById('resetSelectedBtn').addEventListener('click', resetSelected);
+            document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+            document.getElementById('addNoteBtn').addEventListener('click', addNewNote);
+
+            window.addEventListener('resize', () => {
+                scrollTasbihToCurrent();
+            });
+        }
+
+        loadData();
+        attachEvents();
+        renderNotesList();
+        updateCounterAndCard();
+        renderTasbihVisual();
+        startTimer();
+    </script>
+</body>
+
+</html>
